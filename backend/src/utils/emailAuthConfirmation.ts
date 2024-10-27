@@ -6,8 +6,8 @@ export const sendEmailConf = (senderEmail : string, otp: string) => {
         // port: 587,
         // secure: false, // use SSL
         auth: {
-          user: 'bharathronanki@gmail.com',
-          pass: 'kqxnnlkhaavxtriz',
+          user: process.env.APP_USERNAME,
+          pass: process.env.APP_PASSWORD
         }
       });
       
