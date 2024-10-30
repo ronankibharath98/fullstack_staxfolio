@@ -48,7 +48,11 @@ export const emailVerify = async( req: Request, res: Response): Promise<void> =>
         })
         return
     } catch (error) {
-        res.status(500).json
+        res.status(500).json({
+            mesage: "Error in server while verifying otp",
+            success: false,
+            error
+        })
         return
     }
 }
