@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
 import { z } from "zod"
-import { AdminSigninInput } from "../zod/zodAdminSchema";
+import { AdminSigninInput, AdminSignupInput } from "../zod/zodAdminSchema";
 import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 // Admin signup controller
 export const adminSignup = async( req: Request, res: Response ): Promise<void> => {
     try {
-        const {orgEmail, orgName, password} = AdminSigninInput.parse(req.body);
+        const {orgEmail, orgName, password} = AdminSignupInput.parse(req.body);
         const orgEmailExist = await prisma.admin.findUnique({
             where: {orgEmail}
         })
@@ -59,11 +59,11 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
 // Admin signin controller
 export const AdminSignin = async( req: Request, res: Response): Promise<void> => {
     try {
-        const { email, password } = req.body;
+        const { orgEmail, password } = AdminSigninInput.parse(req.body);
 
         const admin = await prisma.admin.findFirst({
             where:{
-                orgEmail: email
+                orgEmail: orgEmail
             }
         })
         if(!admin){
