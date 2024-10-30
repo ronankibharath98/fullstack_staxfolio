@@ -1,8 +1,18 @@
 import { z } from "zod"
 
+export const OrgEmailAuthInput = z.object({
+    orgEmail: z.string().email()
+})
+
+
+export const AdminOtpInput = z.object({
+    orgEmail: z.string().email(),
+    otp: z.string()
+})
+
 export const AdminSignupInput = z.object({
     orgName: z.string(),
-    orgEmail: z.string(),
+    orgEmail: z.string().email(),
     password: z
     .string()
     .min(8, {message: "Password must be atleast 8 characters long"})
