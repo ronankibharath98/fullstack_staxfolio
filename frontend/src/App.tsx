@@ -10,12 +10,13 @@ function App() {
     <Routes>
       <Route path="/signup" element= {<Signup/>}/>
       <Route path="/signin" element= {<Signin/>}/>
-      <Route path="admin/signup" element= {<Signup/>}/>
+      <Route path="admin/signup" element= {<AdminSignup/>}/>
       <Route path="admin/signin" element= {<AdminSignin/>}/>
     </Routes>
     </BrowserRouter>
   )
 }
 import { AdminSignin } from './pages/admin/AdminSignin'
+import { AdminSignup } from './pages/admin/AdminSignup'
 
 export default App

@@ -3,54 +3,72 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { USER_API_END_POINT } from "../utils/constant"
 
-export const SignupComp = () => {
+export const AdminSignupComp = () => {
   const [input, setInput] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    orgName: "",
+    orgEmail: "",
     otp: "",
     password: ""
   })
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate();
+
   const changeEventHandler = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+
+    setInput((prevData) => ({
+      ...prevData,
+      [name]: value
+    }))
   }
 
   const handleGenerateOtp = async () => {
+    setLoading(true);
     try {
-      await axios.post(`${USER_API_END_POINT}/api/v1/admin/email`, { email: input.email })
+      await axios.post(`${USER_API_END_POINT}/api/v1/admin/email`, { orgEmail: input.orgEmail })
       setStep(2);
-    } catch (error) {
-      console.log(error)
-      alert(error)
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Error generating OTP, Please try again.")
+    } finally {
+      setLoading(false)
     }
 
   }
 
   const handleVerifyOtp = async () => {
-    const isValid = await axios.post(`${USER_API_END_POINT}/api/v1/auth/email/verify-otp`, { email: input.email, otp: input.otp })
-
-    if (isValid) {
-      setStep(3); // Move to registration step
-    } else {
-      alert("Invalid OTP. Please try again.");
-      setStep(2);
+    setLoading(true)
+    try {
+      const isValid = await axios.post(`${USER_API_END_POINT}/api/v1/admin/email/verify-otp`, { orgEmail: input.orgEmail, otp: input.otp })
+      if (isValid) {
+        setStep(3); 
+      } else {
+        alert("Invalid OTP. Please try again.");
+        setStep(2);
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Error verifying OTP, Please try again.")
+    } finally{
+      setLoading(false);
     }
+
   }
 
   // Function to handle final registration
   const handleRegistration = async () => {
+    setLoading(true)
     try {
-      await axios.post(`${USER_API_END_POINT}/api/v1/auth/signup`, {
-        firstName: input.firstName,
-        lastName: input.lastName,
-        email: input.email,
+      await axios.post(`${USER_API_END_POINT}/api/v1/admin/signup`, {
+        orgName: input.orgName,
+        orgEmail: input.orgEmail,
         password: input.password
       })
       navigate("/welcome"); // Redirect after successful registration
-    } catch (error) {
-      alert(error)
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Registration failed, Try agin.")
+    } finally {
+      setLoading(false)
     }
 
   };
@@ -60,7 +78,7 @@ export const SignupComp = () => {
       <div className="flex justify-center">
         <div className="border drop-shadow-sm rounded-2xl bg-white border-slate-100 py-5 px-10">
           <div className="flex flex-col items-center mb-8">
-            <img src="logo.svg" alt="Logo" className="w-[80px] h-[80px] mb-4" />
+            <img src="/logo.svg" alt="Logo" className="w-[80px] h-[80px] mb-4" />
             <h1 className="text-gray-700 text-center font-semibold text-2xl">
               SIGN UP
             </h1>
@@ -87,6 +105,7 @@ export const SignupComp = () => {
             <span className="block w-full h-px bg-gray-300"></span>
             <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">Or</p>
           </div>
+          {error && <p className="mt-5 text-red-600 text-center">{error}</p>}
           <div className="mt-8">
             {step === 1 && (
               <form className="w-[280px]">
@@ -94,10 +113,10 @@ export const SignupComp = () => {
                   <span className="mt-5 mb-2 block text-sm font-medium text-slate-800">Email</span>
                   <input
                     type="text"
-                    name="email"
-                    value={input.email}
+                    name="orgEmail"
+                    value={input.orgEmail}
                     onChange={changeEventHandler}
-                    placeholder="username@domain.com"
+                    placeholder="admin@domain.com"
                     className="mt-1 block w-full px-3 py-4 bg-slate-100 border border-slate-300 rounded-md text-sm 
                   shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
                   disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
@@ -115,7 +134,7 @@ export const SignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
                 </div>
               </form>
             )}
@@ -146,7 +165,7 @@ export const SignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
                 </div>
               </form>
             )}
@@ -156,24 +175,10 @@ export const SignupComp = () => {
                   <span className="mt-5 mb-2 block text-sm font-medium text-slate-800">First name</span>
                   <input
                     type="text"
-                    name="firstName"
-                    value={input.firstName}
+                    name="orgName"
+                    value={input.orgName}
                     onChange={changeEventHandler}
                     placeholder="Robert"
-                    className="mt-1 block w-full px-3 py-4 bg-slate-100 border border-slate-300 rounded-md text-sm 
-                  shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
-                  disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-                  invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mt-3 mb-2 block text-sm font-medium text-slate-800">Last name</span>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={input.lastName}
-                    onChange={changeEventHandler}
-                    placeholder="jerald"
                     className="mt-1 block w-full px-3 py-4 bg-slate-100 border border-slate-300 rounded-md text-sm 
                   shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
                   disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
@@ -211,7 +216,7 @@ export const SignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
                 </div>
               </form>
             )}

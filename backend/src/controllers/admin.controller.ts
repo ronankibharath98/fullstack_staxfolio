@@ -21,7 +21,7 @@ export const orgEmailVerification = async( req: Request, res: Response): Promise
             (admin.orgName != null || admin.orgName != undefined)
         ) {
             res.status(400).json({
-                message: "Email already used, use a different email or signin",
+                message: "Email already used",
                 success: false
             })
             return
@@ -94,7 +94,7 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
             orgEmailExist?.orgName &&
             orgEmailExist.password){
             res.status(400).json({
-                message: "User already existing with this emial, Please login using the same email",
+                message: "User already exxist with this emial",
                 success: true,
             })
             return   
@@ -170,7 +170,7 @@ export const adminSignin = async( req: Request, res: Response): Promise<void> =>
 
         if(!isPasswordMatch){
             res.status(404).json({
-                message: "Passowrd did not match, Please check and re-login",
+                message: "Password did not match",
                 success: false
             })
             return

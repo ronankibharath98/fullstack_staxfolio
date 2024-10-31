@@ -103,7 +103,7 @@ export const AdminSigninComp = () => {
                                 </button>
                             </div>
                             <div className="flex text-sm text-left space-x-1">
-                                <p className="font-medium text-gray-600">Dont't have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signup</a>
+                                <p className="font-medium text-gray-600">Dont't have an account?</p><a href="/admin/signup" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signup</a>
                             </div>
                         </form>
                     </div>
