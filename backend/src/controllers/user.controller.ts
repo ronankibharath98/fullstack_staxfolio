@@ -16,15 +16,15 @@ export const emailVerify = async( req: Request, res: Response): Promise<void> =>
 
         const {email} = EmailAuthInput.parse(req.body);
 
-        const existingEmail = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { email }
         })
 
-        if (existingEmail && 
-            (existingEmail.password != null || existingEmail.password != undefined) &&
-            (existingEmail.firstName != null || existingEmail.firstName != undefined) &&
-            (existingEmail.lastName != null || existingEmail.lastName != undefined)
-        ) {
+        if (user &&
+            (user.password != null || user.password != undefined) &&
+            (user.firstName != null || user.firstName != undefined) &&
+            (user.lastName != null || user.lastName != undefined)
+            ) {
             res.status(400).json({
                 message: "Email already used, use a different email or signin",
                 success: false
@@ -37,7 +37,7 @@ export const emailVerify = async( req: Request, res: Response): Promise<void> =>
         await sendEmailConf(email, otp);
 
         // add the otp to user model to verify on the next route when user gets otp email 
-        await prisma.user.upsert({
+        await prisma.verifyUserOtp.upsert({
             where: {email},
             update: {otp},
             create: {email, otp}
@@ -61,7 +61,7 @@ export const otpVerify = async(req: Request, res: Response): Promise<void> => {
     try {
         const { email, otp } = EmailOtpInput.parse(req.body);
 
-        const otpRecord = await prisma.user.findUnique({
+        const otpRecord = await prisma.verifyUserOtp.findUnique({
             where: {email}
         })
 
@@ -72,7 +72,25 @@ export const otpVerify = async(req: Request, res: Response): Promise<void> => {
             })
             return
         }
-        
+
+        await prisma.verifyUserOtp.upsert({
+            where: {email},
+            update: {
+                verified: true
+            },
+            create: {
+                email,
+                otp,
+                verified: true
+            }
+        })
+
+        await prisma.user.create({
+            data:{
+                email: email
+            }
+        })
+
         res.status(200).json({
             message: "OTP verified successfully",
             success: true
