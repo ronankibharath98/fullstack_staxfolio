@@ -1,11 +1,18 @@
-import { PrismaClient } from "@prisma/client"
-import { Request, Response } from "express"
 import { EmailAuthInput, EmailOtpInput, SigninInput, SignupInput } from "../zod/zodSchema";
-import { sendEmailConf } from "../utils/emailAuthConfirmation"
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { sendEmailConf } from "../utils/emailAuthConfirmation";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { fromEnv } from "@aws-sdk/credential-provider-env";
+import { PrismaClient } from "@prisma/client";
+import { Request, Response } from "express";
 import bcrypt from "bcrypt"
 import { z } from "zod";
 
 const prisma = new PrismaClient();
+const s3 = new S3Client({
+    credentials: fromEnv(),
+    region: process.env.AWS_REGION
+})
 
 // {
 //     log: ['query', 'info', 'warn', 'error']
@@ -110,7 +117,51 @@ export const otpVerify = async(req: Request, res: Response): Promise<void> => {
 export const userSignup = async(req: Request, res: Response): Promise<void> => {
     try {
         const { firstName, lastName, email, password } = SignupInput.parse(req.body);
+        const userExists = await prisma.user.findUnique({
+            where: {email}
+        })
+
+        const verificationRecord = await prisma.verifyUserOtp.findUnique({
+            where: {email}
+        })
+
+        if (!verificationRecord || !verificationRecord.verified) {
+            res.status(400).json({
+                message: "Email not verified. Please verify your email before signing up.",
+                success: false,
+            });
+            return 
+        }
+
+        if( userExists?.email &&
+            userExists?.firstName &&
+            userExists?.lastName &&
+            userExists.password){
+            res.status(400).json({
+                message: "User already exists with this emial",
+                success: true,
+            })
+            return   
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10)
+
+        let profilePhotoUrl: string | undefined
+        const file = req.file
+        
+        
+        if(file){
+            const params= {
+                Bucket: process.env.AWS_S3_BUCKET as string,
+                Key: `/user/${email}/uploads/profileImages/${Date.now()}_${file.originalname}`,
+                ContentType: file.mimetype as string,
+                // ACL: 'public-read' as ObjectCannedACL,
+            }
+
+            const command  = new PutObjectCommand(params)
+            profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
+
+        }   
         
         const user = await prisma.user.upsert({
             where: {email},
@@ -129,13 +180,18 @@ export const userSignup = async(req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             message: "User created successfully",
             success: true,
-            user
+            user:{
+                firstName: firstName,
+                lastName: lastName,
+                email: email
+            },
+            uploadUrl: profilePhotoUrl
         })
         return
     } catch (error) {
         if (error instanceof z.ZodError){
             res.status(400).json({
-                messagE: "Validation Error",
+                message: "Validation Error",
                 success: false,
                 error: error.issues.map(e => e)
             })

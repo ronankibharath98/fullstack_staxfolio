@@ -10,10 +10,18 @@ export const AdminSignupComp = () => {
     otp: "",
     password: ""
   })
+  const [file, setFile] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  }
 
   const changeEventHandler = (e) => {
     const { name, value } = e.target
@@ -42,28 +50,57 @@ export const AdminSignupComp = () => {
     try {
       const isValid = await axios.post(`${USER_API_END_POINT}/api/v1/admin/email/verify-otp`, { orgEmail: input.orgEmail, otp: input.otp })
       if (isValid) {
-        setStep(3); 
+        setStep(3);
       } else {
         alert("Invalid OTP. Please try again.");
         setStep(2);
       }
     } catch (error: any) {
       setError(error.response?.data?.message || "Error verifying OTP, Please try again.")
-    } finally{
+    } finally {
       setLoading(false);
     }
 
   }
+  
+  const uploadFileToS3 = async (file: any, url: string) => {
+    try {
+      // Upload the file to S3 using the pre-signed URL
+      await axios.put(url, file, {
+        headers: {
+          'Content-Type': file.type, // Set the content type of the file
+        },
+      });
+  
+      console.log('File uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
+  
 
   // Function to handle final registration
   const handleRegistration = async () => {
     setLoading(true)
     try {
-      await axios.post(`${USER_API_END_POINT}/api/v1/admin/signup`, {
-        orgName: input.orgName,
-        orgEmail: input.orgEmail,
-        password: input.password
+      const formData = new FormData();
+      formData.append("orgName", input.orgName);
+      formData.append("orgEmail", input.orgEmail);
+      formData.append("password", input.password);
+
+      if (file) {
+        formData.append("file", file); // Append the file to the FormData object
+      }
+
+      const response = await axios.post(`${USER_API_END_POINT}/api/v1/admin/signup`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
       })
+      const url = response.data.uploadUrl
+      if (file) {
+        await uploadFileToS3(file, url);
+      }
       navigate("/welcome"); // Redirect after successful registration
     } catch (error: any) {
       setError(error.response?.data?.message || "Registration failed, Try agin.")
@@ -130,7 +167,7 @@ export const AdminSignupComp = () => {
                     className="mt-5 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                       font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                       focus:outline-none dark:focus:ring-violet-800">
-                    Generate OTP
+                    {loading ? "Generating..." : "Get OTP"}
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
@@ -161,7 +198,7 @@ export const AdminSignupComp = () => {
                     className="mt-8 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                     font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                     focus:outline-none dark:focus:ring-violet-800">
-                    Verify OTP
+                    {loading ? "Verifying..." : "Verify OTP"}
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
@@ -199,6 +236,15 @@ export const AdminSignupComp = () => {
                   invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
                   />
                 </label>
+                <label className="block mt-5">
+                  <span className="mb-2 block text-sm font-medium text-slate-800">Upload File</span>
+                  <input
+                    type="file"
+                    onChange={handleFileChange} // Add the file change handler
+                    className="mt-1 block w-full px-3 py-4 bg-slate-100 border border-slate-300 rounded-md text-sm 
+                  shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  />
+                </label>
                 <div className="flex items-start mt-3">
                   <div className="flex items-center h-5">
                     <input id="terms" type="checkbox" value="" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
@@ -212,7 +258,7 @@ export const AdminSignupComp = () => {
                     className="mt-8 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                     font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                     focus:outline-none dark:focus:ring-violet-800">
-                    Register
+                    {loading ? "Registering..." : "Register"}
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">

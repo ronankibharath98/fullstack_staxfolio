@@ -1,11 +1,13 @@
 import { AdminOtpInput, AdminSigninInput, AdminSignupInput, OrgEmailAuthInput } from "../zod/zodAdminSchema";
 import { ObjectCannedACL, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { sendEmailConf } from "../utils/emailAuthConfirmation";
-import { fromEnv } from "@aws-sdk/credential-provider-env"
-import { PrismaClient } from "@prisma/client"
+import { fromEnv } from "@aws-sdk/credential-provider-env";
+import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import bcrypt from "bcrypt"
-import { z } from "zod"
+import bcrypt from "bcrypt";
+import { z } from "zod";
+
 
 const prisma = new PrismaClient();
 
@@ -112,10 +114,22 @@ export const orgOtpVerification = async( req: Request, res: Response ): Promise<
 // Admin signup controller
 export const adminSignup = async( req: Request, res: Response ): Promise<void> => {
     try {
-        const { orgEmail, orgName, password} = AdminSignupInput.parse(req.body);
+        const { orgEmail, orgName, password } = AdminSignupInput.parse(req.body);
         const adminExist = await prisma.admin.findUnique({
             where: {orgEmail}
         })
+
+        const verificationRecord = await prisma.verifyAdminOtp.findUnique({
+            where: { orgEmail },
+        });
+
+        if (!verificationRecord || !verificationRecord.verified) {
+            res.status(400).json({
+                message: "Email not verified. Please verify your email before signing up.",
+                success: false,
+            });
+            return 
+        }
 
         if( adminExist?.orgEmail &&
             adminExist?.orgName &&
@@ -131,27 +145,19 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
 
         let profilePhotoUrl: string | undefined
         const file = req.file
-
+        
+        
         if(file){
             const params= {
                 Bucket: process.env.AWS_S3_BUCKET as string,
-                Key: `profile-photos/${Date.now()}_${file.originalname}`,
-                Body: file.buffer,
+                Key: `/admin/${orgEmail}/uploads/profileImages/${Date.now()}_${file.originalname}`,
                 ContentType: file.mimetype as string,
-                ACL: 'public-read' as ObjectCannedACL,
+                // ACL: 'public-read' as ObjectCannedACL,
             }
 
-            try {
-                await s3.send(new PutObjectCommand(params));
-                profilePhotoUrl = `https://${params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`
-            } catch (s3Error) {
-                res.status(500).json({
-                    message: "Failed to upload profile photo",
-                    success: false,
-                    error: s3Error
-                });
-                return;
-            }
+            const command  = new PutObjectCommand(params)
+            profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
+
         }   
 
         const admin  = await prisma.admin.upsert({
@@ -167,10 +173,26 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
             }
         })
 
+        // if(profilePhotoUrl && file){
+        //     await prisma.adminMetadata.create({
+        //         data: {
+        //             url: profilePhotoUrl,
+        //             name: file.originalname,
+        //             type: file.mimetype,
+        //             size: file.size.toString(),
+        //             adminId: admin.id,
+        //         }
+        //     })
+        // }
+
         res.status(200).json({
             message: "Admin registered successfully",
             success: true,
-            admin
+            admin:{
+                name: orgName,
+                email: orgEmail
+            },
+            uploadUrl: profilePhotoUrl
         })
         return
 
