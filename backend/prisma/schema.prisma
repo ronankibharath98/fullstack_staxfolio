@@ -8,46 +8,77 @@ datasource db {
 }
 
 model VerifyUserOtp {
-  id         String @id @default(uuid())
-  email      String @unique
-  otp        String?
-  verified   Boolean @default(false) // To track OTP verification status
+  id            String    @id   @default(uuid())
+  email         String    @unique
+  otp           String?
+  verified      Boolean   @default(false) // To track OTP verification status
 }
 
 model VerifyAdminOtp {
-  id         String @id @default(uuid())
-  orgEmail   String @unique
-  otp        String?
-  verified   Boolean @default(false) // To track OTP verification status
+  id            String    @id @default(uuid())
+  orgEmail      String    @unique
+  otp           String?
+  verified      Boolean   @default(false) // To track OTP verification status
 }
 
 model User {
-  id          String    @id @default(uuid())
-  firstName   String?
-  lastName    String?
-  email       String    @unique
-  password    String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+  id            String    @id @default(uuid())
+  firstName     String?
+  lastName      String?
+  email         String    @unique
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+  metadata      UserMetadata[]  @relation("UserMetadataRelation")
+}
+
+model UserMetadata {
+  id            String    @id @default(uuid())
+  url           String
+  name          String
+  type          String
+  size          String
+  uploadedAt    DateTime  @default(now())
+  userId        String
+  user          User     @relation("UserMetadataRelation",fields: [userId], references: [id])
 }
 
 model Admin {
-  id          String            @id @default(uuid())
-  orgName     String?
-  orgEmail    String            @unique
-  password    String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @default(now())
-  metadata    AdminMetadata[]   @relation("AdminMetadataRelation")
+  id            String            @id @default(uuid())
+  orgName       String?
+  orgEmail      String            @unique
+  password      String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @default(now())
+  metadata      AdminMetadata[]   @relation("AdminMetadataRelation")
 }
 
 model AdminMetadata {
-  id          String    @id @default(uuid())
-  url         String
-  name        String
-  type        String
-  size        String
-  uploadedAt  DateTime  @default(now())
-  adminId      String
-  admin        Admin     @relation("AdminMetadataRelation",fields: [adminId], references: [id])
+  id            String    @id @default(uuid())
+  url           String
+  name          String
+  type          String
+  size          String
+  uploadedAt    DateTime  @default(now())
+  adminId       String
+  admin         Admin     @relation("AdminMetadataRelation",fields: [adminId], references: [id])
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  title         String   
+  description   String
+  metadata      ProductMetadata[] @relation("ProductMetadataRelation")
+}
+
+model ProductMetadata {
+  id            String    @id   @default(uuid())
+  url           String
+  name          String
+  type          String
+  size          String
+  uploadedAt    DateTime  @default(now())
+  productId     String
+  product       Product   @relation("ProductMetadataRelation",fields: [productId], references: [id])
 }

@@ -117,6 +117,7 @@ export const otpVerify = async(req: Request, res: Response): Promise<void> => {
 export const userSignup = async(req: Request, res: Response): Promise<void> => {
     try {
         const { firstName, lastName, email, password } = SignupInput.parse(req.body);
+
         const userExists = await prisma.user.findUnique({
             where: {email}
         })
@@ -177,6 +178,19 @@ export const userSignup = async(req: Request, res: Response): Promise<void> => {
                 password: hashedPassword
             }
         })
+
+        if(profilePhotoUrl && file){
+            await prisma.userMetadata.create({
+                data:{
+                    url: profilePhotoUrl,
+                    name: file.originalname,
+                    type: file.mimetype,
+                    size: file.size.toString(),
+                    userId: user.id,
+                }
+            })
+        }
+
         res.status(200).json({
             message: "User created successfully",
             success: true,

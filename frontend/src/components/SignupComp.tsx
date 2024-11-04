@@ -93,7 +93,7 @@ export const SignupComp = () => {
 
       const response = await axios.post(`${USER_API_END_POINT}/api/v1/user/signup`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         }
       })
       const url = response.data.uploadUrl
@@ -167,7 +167,7 @@ export const SignupComp = () => {
                       className="mt-5 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                       font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                       focus:outline-none dark:focus:ring-violet-800">
-                      Generate OTP
+                      {loading? "Please wait..." : "Generate OTP"}
                     </button>
                   </div>
                   <div className="flex justify-center text-sm text-center space-x-1">
@@ -199,7 +199,7 @@ export const SignupComp = () => {
                     className="mt-8 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                     font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                     focus:outline-none dark:focus:ring-violet-800">
-                    Verify OTP
+                    { loading? "Please wait..." : "Verify OTP" }
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
@@ -273,7 +273,7 @@ export const SignupComp = () => {
                     className="mt-8 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                     font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                     focus:outline-none dark:focus:ring-violet-800">
-                    Register
+                    {loading? "Please wait..." : "Register"}
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">

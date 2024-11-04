@@ -1,10 +1,11 @@
-import { AdminOtpInput, AdminSigninInput, AdminSignupInput, OrgEmailAuthInput } from "../zod/zodAdminSchema";
-import { ObjectCannedACL, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { AdminOtpInput, AdminSigninInput, AdminSignupInput, OrgEmailAuthInput, UploadProductInput } from "../zod/zodAdminSchema";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { sendEmailConf } from "../utils/emailAuthConfirmation";
 import { fromEnv } from "@aws-sdk/credential-provider-env";
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { z } from "zod";
 
@@ -173,19 +174,30 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
             }
         })
 
-        // if(profilePhotoUrl && file){
-        //     await prisma.adminMetadata.create({
-        //         data: {
-        //             url: profilePhotoUrl,
-        //             name: file.originalname,
-        //             type: file.mimetype,
-        //             size: file.size.toString(),
-        //             adminId: admin.id,
-        //         }
-        //     })
-        // }
+        if(profilePhotoUrl && file){
+            await prisma.adminMetadata.create({
+                data: {
+                    url: profilePhotoUrl,
+                    name: file.originalname,
+                    type: file.mimetype,
+                    size: file.size.toString(),
+                    adminId: admin.id,
+                }
+            })
+        }
 
-        res.status(200).json({
+        const tokenData = {
+            user_id: admin.id,
+            orgEmail: admin.orgEmail
+        }
+
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {expiresIn:"1d"})
+
+        res.status(200).cookie("token", token,{
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            // httpOnly: true,
+            // samesite: "strict"
+        }).json({
             message: "Admin registered successfully",
             success: true,
             admin:{
@@ -215,7 +227,7 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
 }
 
 // Admin signin controller
-export const adminSignin = async( req: Request, res: Response): Promise<void> => {
+export const adminSignin = async(req: Request, res: Response): Promise<void> => {
     try {
         const { orgEmail, password } = AdminSigninInput.parse(req.body);
 
@@ -240,7 +252,7 @@ export const adminSignin = async( req: Request, res: Response): Promise<void> =>
             return
         }
 
-        const isPasswordMatch = await bcrypt.compare( password, admin.password )
+        const isPasswordMatch = await bcrypt.compare(password, admin.password)
 
         if(!isPasswordMatch){
             res.status(404).json({
@@ -250,7 +262,17 @@ export const adminSignin = async( req: Request, res: Response): Promise<void> =>
             return
         }
 
-        res.status(200).json({
+        const tokenData = {
+            userId: admin.id,
+            email: admin.orgEmail
+        }
+
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, { expiresIn: "1d"})
+
+        res.status(200).cookie("token", token, {
+            // httpOnly: true,
+            maxAge: 1 * 24 * 60 * 60 * 1000
+        }).json({
             message: "Admin logged in successfully",
             success: true,
             admin: {
@@ -267,5 +289,47 @@ export const adminSignin = async( req: Request, res: Response): Promise<void> =>
             error
         })
         return
+    }
+}
+
+export const uploadProducts = async(req: Request, res: Response): Promise<void> => {
+    try {
+        const { name, title, description } =  UploadProductInput.parse(req.body);
+        const file = req.file;
+
+        const productExists = await prisma.product.findUnique({
+            where: {name}
+        })
+
+        if(productExists){
+            res.status(404).json({
+                message: "Product with the same name already exists",
+                success: false,
+            })
+            return
+        }
+
+        let profilePhotoUrl: string | undefined
+
+        if(file){
+            const params= {
+                Bucket: process.env.AWS_S3_BUCKET as string,
+                Key: `/admin/${orgEmail}/uploads/profileImages/${Date.now()}_${file.originalname}`,
+                ContentType: file.mimetype as string,
+                // ACL: 'public-read' as ObjectCannedACL,
+            }
+
+            const command  = new PutObjectCommand(params)
+            profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
+
+        }  
+
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error in uploading product",
+            success: false,
+            error
+        })
     }
 }

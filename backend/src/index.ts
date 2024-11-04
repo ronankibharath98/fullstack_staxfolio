@@ -1,8 +1,8 @@
-import epxress, { Request, Response } from "express";
+import epxress from "express";
 import cookieParser from "cookie-parser";
-import userRoute from "./routes/user.route"
-import adminRoute from "./routes/admin.route"
-import staxRoute from "./routes/stax.route"
+import userRoute from "./routes/user.routes"
+import adminRoute from "./routes/admin.routes"
+import productRoute from "./routes/products.routes"
 import express from "express";
 import dotenv from "dotenv"
 import cors from "cors";
@@ -27,7 +27,7 @@ const PORT = process.env.PORT ?? 8000
 
 app.use("/api/v1/user", userRoute)
 app.use("/api/v1/admin", adminRoute)
-app.use("/api/v1/stack", staxRoute)
+app.use("/api/v1/stack", productRoute)
 
 app.listen(PORT, () => {
     console.log(`Server listenening at port http://localhost:${PORT}`)

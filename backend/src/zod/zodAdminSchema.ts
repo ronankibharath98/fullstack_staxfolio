@@ -32,3 +32,9 @@ export const AdminSigninInput = z.object({
     .regex(/\d/, { message: "Password must contain atleast one number"})
     .regex(/[@$%&*?]/, { message: "Password must contain atleast one character"})
 })
+
+export const UploadProductInput = z.object({
+    name: z.string(),
+    title: z.string(),
+    description: z.string()
+})
