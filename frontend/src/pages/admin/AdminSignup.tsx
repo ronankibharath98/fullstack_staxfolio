@@ -1,4 +1,5 @@
-import { AdminSignupComp } from "@/components/admin/AdminSignup"
+import { AdminSignupComp } from "@/components/admin/AdminSignupComp"
+
 
 export const AdminSignup = () => {
     return(

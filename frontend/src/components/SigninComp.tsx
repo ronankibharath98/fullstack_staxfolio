@@ -1,7 +1,10 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { USER_API_END_POINT } from "./utils/constant"
+import { useDispatch, useSelector } from "react-redux"
+import type { RootState } from "@/redux/store"
+import { setLoading, setUser } from "@/redux/authSlice"
 
 export const SigninComp = () => {
   const [input, setInput] = useState({
@@ -9,24 +12,39 @@ export const SigninComp = () => {
     password: ""
   })
 
+  const { loading, user } = useSelector((store: RootState) => store.auth)
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value })
   }
 
   // Function to handle final registration
   const handleRegistration = async () => {
-    try {
-      await axios.post(`${USER_API_END_POINT}/api/v1/auth/signin`, {
-        email: input.email,
-        password: input.password
-      })
-      navigate("/welcome"); // Redirect after successful registration
-    } catch (error) {
-      alert(error)
+    if (!input.email || !input.password) {
+      setError("Email and Password are required");
+      return;
     }
-
+    dispatch(setLoading(true))
+    try {
+      const response = await axios.post(`${USER_API_END_POINT}/api/v1/user/signin`, input)
+      console.log(response.data.user)
+      dispatch(setUser(response.data.user))
+      setError("");
+    } catch (error: any) {
+      setError(error.response?.data?.message || "An error occured")
+    } finally{
+        dispatch(setLoading(false));
+        setError("")
+    }
   };
+
+  useEffect (() => {
+    if(user){
+      navigate("/welcome")
+    }
+  }, [user, navigate])
 
   return (
     <div className="bg-[#e9edf6] flex flex-col justify-center h-screen">
@@ -39,6 +57,7 @@ export const SigninComp = () => {
             </h1>
             <p className="text-sm font-medium text-gray-500 mt-5">Sign in to Staxfolio. Core features free forever.</p>
           </div>
+          {error && <p className="text-red-600 text-center">{error}</p>}
           <div>
             <form className="w-[300px]">
               <label className="block">
@@ -85,7 +104,7 @@ export const SigninComp = () => {
                   className="mt-5 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                   font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                   focus:outline-none dark:focus:ring-violet-800">
-                  Register
+                  Sign in 
                 </button>
               </div>
               <div className="flex text-sm text-left space-x-1">

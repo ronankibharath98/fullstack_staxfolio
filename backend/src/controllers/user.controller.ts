@@ -6,6 +6,7 @@ import { fromEnv } from "@aws-sdk/credential-provider-env";
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 import { z } from "zod";
 
 const prisma = new PrismaClient();
@@ -223,6 +224,13 @@ export const userSignup = async(req: Request, res: Response): Promise<void> => {
 export const userSignin = async( req: Request, res: Response ): Promise<void> => {
     const {email, password} = SigninInput.parse(req.body);
     try {
+        if (!email || !password){
+            res.status(404).json({
+                message: "Please enter all the fields",
+                success: false
+            })
+            return
+        }
         const user = await prisma.user.findUnique({
             where: { email }
         })
@@ -253,7 +261,17 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
             return
         }
 
-        res.status(200).json({
+        const tokenData = {
+            userId: user.id,
+            email: user.email
+        }
+
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {expiresIn: "1d"})
+
+        res.status(200).cookie("token", token, {
+            // httpOnly: true,
+            maxAge: 1 * 24 * 60 * 60 * 1000
+        }).json({
             message: "User logged in successfully",
             success: true,
             user: {

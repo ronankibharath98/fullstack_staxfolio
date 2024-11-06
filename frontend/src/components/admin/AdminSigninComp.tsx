@@ -1,17 +1,20 @@
-import axios from "axios"
-import { useState } from "react"
-import { USER_API_END_POINT } from "../utils/constant"
-import { useNavigate } from "react-router-dom"
-
+import axios from "axios";
+import { useState } from "react";
+import { USER_API_END_POINT } from "../utils/constant";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector} from "react-redux";
+import { setLoading, setUser } from "@/redux/authSlice";
+import type { RootState } from "@/redux/store";
 
 export const AdminSigninComp = () => {
     const [input, setInput] = useState({
         orgEmail: "",
         password: ""
     })
-    const[ loading, setLoading ] = useState(false);
+    const { loading, user } = useSelector((store: RootState) => store.auth);
     const [ error, setError ] = useState<string | null>(null)
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const changeEventHandler = (e: any) => {
         const {name, value} = e.target
@@ -23,21 +26,24 @@ export const AdminSigninComp = () => {
     
     const handleSignin = async(e: any) => {
         e.preventDefault();
-        setLoading(true)
+        dispatch(setLoading(true))
         setError(null)
 
         if ( !input.orgEmail || !input.password) {
-            setError("Email and password are required")
-            setLoading(false)
+            setError("Email and password are required");
+            dispatch(setLoading(false));
             return
         }
         try {
-            await axios.post(`${USER_API_END_POINT}/api/v1/admin/signin`, input);
-            navigate("/welcome");
+            const response = await axios.post(`${USER_API_END_POINT}/api/v1/admin/signin`, input);
+            if(response.data.success){
+                dispatch(setUser(response.data.user))
+                navigate("/welcome");
+            }
         } catch (error: any ) {
             setError(error.response?.data?.message || "An error occured");
         } finally{
-            setLoading(false);
+            dispatch(setLoading(false));
         }
     }
     
