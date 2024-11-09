@@ -1,5 +1,5 @@
 import express from "express";
-import { adminSignin, 
+import { adminLogout, adminSignin, 
         adminSignup, 
         orgEmailVerification, 
         orgOtpVerification, 
@@ -14,6 +14,7 @@ router.route("/email").post(orgEmailVerification)
 router.route("/email/verify-otp").post(orgOtpVerification)
 router.route("/signup").post(singleUpload, adminSignup)
 router.route("/signin").post(adminSignin)
+router.route("/logout").get(adminLogout)
 router.route("/uploadProducts").post(uploadProducts)
 
 export default router;

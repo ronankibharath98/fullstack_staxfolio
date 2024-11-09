@@ -292,6 +292,22 @@ export const adminSignin = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
+export const adminLogout = async(req: Request, res: Response): Promise<void> => {
+    try{
+        res.status(200).cookie("token", "",{maxAge: 0} ).json({
+            message: "Admin logged out successfully",
+            success: true
+        })
+        return
+    } catch(error){
+        res.status(500).json({
+            message: "Server error in admin logout",
+            success: false
+        })
+        return
+    }
+}
+
 export const uploadProducts = async(req: Request, res: Response): Promise<void> => {
     try {
         const { name, title, description } =  UploadProductInput.parse(req.body);

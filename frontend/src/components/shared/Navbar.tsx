@@ -4,40 +4,152 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "@/redux/store"
+import type { RootState } from "@/redux/store";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import axios from "axios";
+import { USER_API_END_POINT } from "../utils/constant";
+import { setUser } from "@/redux/authSlice";
 
 
 export const Navbar = () => {
     const { user } = useSelector((store: RootState) => store.auth);
     const dispatch = useDispatch();
     // const navigate = useNavigate();
+
+    const logoutHandler = async() => {
+        try {
+            const response = await axios.get(`${USER_API_END_POINT}/api/v1/admin/logout`, {withCredentials: true})
+            if (response.data.success){
+                dispatch(setUser(null))
+                // navigate("/authoptions")
+            }
+        } catch (error) {
+            
+        }
+    }
     return (
         <div className="border border-b-slate-200 shadow-sm">
             <div className="flex items-center justify-between overflow-hidden my-2 mx-5">
-                <div className="flex h-[50px] w-[50px] overflow-hidden">
-                    <img src="/logo.svg" alt="Logo" className="object-contain w-auto h-full" />
+                <div className="flex h-[50px] w-auto overflow-hidden">
+                    <div>
+                        <img src="/logo.svg" alt="Logo" className="object-contain w-auto h-full" />
+                    </div>
+
+                    <div className="flex items-center justify-center font-semibold text-xl text-blue-600">
+                        Staxfolio
+                    </div>
+                </div>
+                <div>
+                    { user? (
+                        <div className="hidden md:flex font-medium text-gray-500 space-x-5">
+                            <div className="hover:text-violet-500">
+                                Launches
+                            </div>
+                            <div className="hover:text-violet-500">
+                                Products
+                            </div>
+                            <div className="hover:text-violet-500">
+                                Community
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            
+                        </div>
+                    )}
                 </div>
                 <div className="flex items-center space-x-5">
                     {user ? (
-                        <div>
-                            <div>
-                                Profile
+                        <div className="flex items-center space-x-8">
+                            <div className="cursor-pointer text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                                </svg>
+
                             </div>
                             <div>
                                 <Popover>
-                                    <PopoverTrigger>Open</PopoverTrigger>
-                                    <PopoverContent>Place content for the popover here.</PopoverContent>
+                                    <PopoverTrigger>
+                                        <Avatar className="cursor-pointer">
+                                            <AvatarImage
+                                                src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
+                                                alt={user?.fullname || "Profile Image"}
+                                            />
+                                        </Avatar>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                        <div className='flex items-center gap-2 space-y-2'>
+                                            <Avatar className="cursor-pointer">
+                                                <AvatarImage
+                                                    src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
+                                                    alt={user?.firstName || "Profile Image"}
+                                                />
+                                            </Avatar>
+                                            <div>
+                                                <h4 className='font-medium'>{user?.firstName || "Admin"}</h4>
+                                                <p className='text-sm text-muted-foreground'>{user?.profile?.bio || "Admin Dashboard"}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col mt-3 space-y-3 text-gray-600">
+                                            <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+
+                                                Profile
+                                            </div>
+                                            <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
+                                                </svg>
+                                                My Products
+                                            </div>
+                                            <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z" />
+                                                </svg>
+                                                Dashboard
+                                            </div>
+                                            <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                                Settings
+                                            </div>
+                                            <div className='flex items-center gap-2 w-fit cursor-pointer hover:text-red-600'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                                </svg>
+                                                <a onClick={logoutHandler}>Logout</a>
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
                                 </Popover>
                             </div>
                         </div>
                     ) :
                         (
-                            <div>
-                                Sign up
-                                Sign out
+                            <div className="flex space-x-5">
+                                <div>
+                                    <button
+                                        onClick={() => window.location.href = "/signup"}
+                                        type="button"
+                                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                                        Sign up
+                                    </button>
+                                </div>
+                                <div>
+                                    <button
+                                        onClick={() => window.location.href = "/signin"}
+                                        type="button"
+                                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                                        Sign in
+                                    </button>
+                                </div>
+
                             </div>
                         )}
-
                 </div>
             </div>
         </div>
