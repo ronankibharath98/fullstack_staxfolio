@@ -11,8 +11,8 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-      <Navbar/>
-      <App />
+        <Navbar/>
+        <App />
       </PersistGate>
     </Provider>
     

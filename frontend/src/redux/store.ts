@@ -7,6 +7,7 @@ import { persistReducer, persistStore, FLUSH,
     PERSIST,
     PURGE,
     REGISTER, } from "redux-persist"
+import { productSlice } from './productSlice';
 
 const persistConfig = {
     key: "root",
@@ -14,7 +15,8 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-    auth: authSlice.reducer
+    auth: authSlice.reducer,
+    product: productSlice.reducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

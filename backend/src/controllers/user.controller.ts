@@ -291,3 +291,22 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
         return
     }
 }
+
+export const getProducts = async(req: Request, res: Response): Promise<void> => {
+    try {
+        const products = await prisma.product.findMany();
+
+        res.status(200).json({
+            message: "Products retrived successfully",
+            success: true,
+            products
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error in view products",
+            success: false,
+            error
+        })
+        return
+    }
+}

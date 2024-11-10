@@ -37,7 +37,7 @@ export const AdminSigninComp = () => {
         try {
             const response = await axios.post(`${USER_API_END_POINT}/api/v1/admin/signin`, input);
             if(response.data.success){
-                dispatch(setUser(response.data.user))
+                dispatch(setUser(response.data.admin.email))
                 navigate("/welcome");
             }
         } catch (error: any ) {
@@ -109,7 +109,7 @@ export const AdminSigninComp = () => {
                                 </button>
                             </div>
                             <div className="flex text-sm text-left space-x-1">
-                                <p className="font-medium text-gray-600">Dont't have an account?</p><a href="/admin/signup" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signup</a>
+                                <p className="font-medium text-gray-600">Dont't have an account?</p><a href="/provider/signup" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signup</a>
                             </div>
                         </form>
                     </div>

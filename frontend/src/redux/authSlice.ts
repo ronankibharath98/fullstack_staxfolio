@@ -1,13 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+type Role = null | "provider" | "user" 
+
+interface AuthState {
+    loading: boolean;
+    user: any;
+    role: Role;
+}
+
+const initialState: AuthState = {
+    loading: false,
+    user: null,
+    role: null
+}
 
 export const authSlice = createSlice({
     name: "auth",
-    initialState:{
-        loading: false,
-        user: null,
-        role: null
-    },
+    initialState,
     reducers:{
         //actions
         setLoading: (state, action) => {

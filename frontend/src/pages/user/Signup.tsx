@@ -1,4 +1,4 @@
-import { SignupComp } from "@/components/SignupComp"
+import { SignupComp } from "@/components/user/SignupComp"
 
 export const Signup = () => {
   return (

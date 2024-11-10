@@ -41,7 +41,7 @@ export const Navbar = () => {
                 </div>
                 <div>
                     { user? (
-                        <div className="hidden md:flex font-medium text-gray-500 space-x-5">
+                        <div className="hidden md:flex font-medium text-gray-700 space-x-5">
                             <div className="hover:text-violet-500">
                                 Launches
                             </div>
@@ -61,7 +61,7 @@ export const Navbar = () => {
                 <div className="flex items-center space-x-5">
                     {user ? (
                         <div className="flex items-center space-x-8">
-                            <div className="cursor-pointer text-gray-500">
+                            <div className="cursor-pointer text-gray-500 hover:text-gray-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                                 </svg>
@@ -133,17 +133,17 @@ export const Navbar = () => {
                             <div className="flex space-x-5">
                                 <div>
                                     <button
-                                        onClick={() => window.location.href = "/signup"}
+                                        onClick={() => window.location.href = "/authoptions"}
                                         type="button"
-                                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                                        className="focus:outline-none text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                                         Sign up
                                     </button>
                                 </div>
                                 <div>
                                     <button
-                                        onClick={() => window.location.href = "/signin"}
+                                        onClick={() => window.location.href = "/authoptions"}
                                         type="button"
-                                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                                        className="focus:outline-none text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                                         Sign in
                                     </button>
                                 </div>

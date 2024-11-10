@@ -1,8 +1,11 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { setRole } from "@/redux/authSlice"
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 export const AuthOptions = () => {
-    const [role, setRole] = useState(null); // null, 'provider', or 'user'
+    const { role } = useSelector((store: RootState) => store.auth); // null, 'provider', or 'user'
+    const dispatch = useDispatch();
 
     return (
         <div className="bg-[#e9edf6] flex flex-col justify-center h-screen">
@@ -17,14 +20,13 @@ export const AuthOptions = () => {
                             Select your role to continue.
                         </p>
                     </div>
-
                     {/* Role Selection */}
                     {role === null ? (
                         <div className="flex flex-col space-y-5">
-                            <Button onClick={() => setRole("provider")} className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-3">
+                            <Button onClick={() => dispatch(setRole("provider"))} className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-3">
                                 I'm a Software Provider
                             </Button>
-                            <Button onClick={() => setRole("user")} className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-3">
+                            <Button onClick={() => dispatch(setRole("user"))} className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-3">
                                 I'm a User
                             </Button>
                         </div>
@@ -34,14 +36,14 @@ export const AuthOptions = () => {
                                 {role === "provider" ? "Provider" : "User"} Login or Signup
                             </h2>
                             <div className="flex flex-col space-y-3">
-                                <Button onClick={() => window.location.href=`/${role}/login`} className="bg-violet-600 text-white rounded-lg py-3">
-                                    Login
+                                <Button onClick={() => window.location.href=`/${role}/signin`} className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
+                                    Sign in
                                 </Button>
-                                <Button onClick={() => window.location.href= `/${role}/signup` }  className="bg-violet-700 text-white rounded-lg py-3">
-                                    Signup
+                                <Button onClick={() => window.location.href= `/${role}/signup` }  className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
+                                    Sign up
                                 </Button>
                             </div>
-                            <Button onClick={() => setRole(null)} className="mt-5 text-sm text-blue-600 underline">
+                            <Button onClick={() => dispatch(setRole(null))} className="mt-5 text-sm bg-transparent hover:bg-transparent text-blue-600 underline">
                                 Back to Role Selection
                             </Button>
                         </div>

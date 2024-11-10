@@ -22,25 +22,25 @@ model VerifyAdminOtp {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String          @id @default(uuid())
   firstName     String?
   lastName      String?
-  email         String    @unique
+  email         String          @unique
   password      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now())
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
   metadata      UserMetadata[]  @relation("UserMetadataRelation")
 }
 
 model UserMetadata {
-  id            String    @id @default(uuid())
+  id            String          @id @default(uuid())
   url           String
   name          String
   type          String
   size          String
-  uploadedAt    DateTime  @default(now())
+  uploadedAt    DateTime         @default(now())
   userId        String
-  user          User     @relation("UserMetadataRelation",fields: [userId], references: [id])
+  user          User             @relation("UserMetadataRelation",fields: [userId], references: [id])
 }
 
 model Admin {
@@ -51,6 +51,7 @@ model Admin {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @default(now())
   metadata      AdminMetadata[]   @relation("AdminMetadataRelation")
+  products      Product[]         @relation("AdminProductRelation")
 }
 
 model AdminMetadata {
@@ -65,10 +66,14 @@ model AdminMetadata {
 }
 
 model Product {
-  id            String   @id @default(uuid())
-  name          String   @unique
+  id            String            @id @default(uuid())
+  name          String            @unique
   title         String   
   description   String
+  comments      String[]
+  tags          String[]
+  adminId       String
+  admin         Admin             @relation("AdminProductRelation", fields: [adminId], references: [id])
   metadata      ProductMetadata[] @relation("ProductMetadataRelation")
 }
 

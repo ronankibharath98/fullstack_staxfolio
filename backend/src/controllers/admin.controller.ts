@@ -1,5 +1,5 @@
 import { AdminOtpInput, AdminSigninInput, AdminSignupInput, OrgEmailAuthInput, UploadProductInput } from "../zod/zodAdminSchema";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectAclCommand , S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { sendEmailConf } from "../utils/emailAuthConfirmation";
 import { fromEnv } from "@aws-sdk/credential-provider-env";
@@ -144,20 +144,22 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
 
         const hashedPasssword = await bcrypt.hash(password, 10)
 
-        let profilePhotoUrl: string | undefined
-        const file = req.file
-        
+        let profilePhotoUrl: string | undefined;
+        let s3Key: string | undefined;
+        const file = req.file;      
         
         if(file){
+            s3Key = `/admin/${orgEmail}/uploads/profileImages/${Date.now()}_${file.originalname}`;
             const params= {
                 Bucket: process.env.AWS_S3_BUCKET as string,
-                Key: `/admin/${orgEmail}/uploads/profileImages/${Date.now()}_${file.originalname}`,
+                Key: s3Key,
                 ContentType: file.mimetype as string,
                 // ACL: 'public-read' as ObjectCannedACL,
             }
 
-            const command  = new PutObjectCommand(params)
-            profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
+            const command  = new PutObjectCommand(params);
+            //presigned url for put object
+            profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600});
 
         }   
 
@@ -177,7 +179,7 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
         if(profilePhotoUrl && file){
             await prisma.adminMetadata.create({
                 data: {
-                    url: profilePhotoUrl,
+                    url: s3Key as string,
                     name: file.originalname,
                     type: file.mimetype,
                     size: file.size.toString(),
@@ -310,7 +312,8 @@ export const adminLogout = async(req: Request, res: Response): Promise<void> => 
 
 export const uploadProducts = async(req: Request, res: Response): Promise<void> => {
     try {
-        const { name, title, description } =  UploadProductInput.parse(req.body);
+        const { name, title, description, tags} =  UploadProductInput.parse(req.body);
+        const adminId = req.id 
         const file = req.file;
 
         const productExists = await prisma.product.findUnique({
@@ -324,21 +327,59 @@ export const uploadProducts = async(req: Request, res: Response): Promise<void> 
             })
             return
         }
-
-        let profilePhotoUrl: string | undefined
-
+        
+        if (!adminId) {
+            res.status(404).json({
+                message: "Admin not found",
+                success: false,
+            });
+            return;
+        }
+        const tagsArray = tags ? tags.split(',') : [];
+        const orgEmail = req.email;
+        let productUrl: string | undefined;
+        let s3Key: string | undefined;
         if(file){
+            s3Key = `/admin/${orgEmail}/uploads/productImage/${Date.now()}_${file.originalname}`;
             const params= {
                 Bucket: process.env.AWS_S3_BUCKET as string,
-                Key: `/admin/${orgEmail}/uploads/profileImages/${Date.now()}_${file.originalname}`,
+                Key: s3Key,
                 ContentType: file.mimetype as string,
                 // ACL: 'public-read' as ObjectCannedACL,
             }
 
             const command  = new PutObjectCommand(params)
-            profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
+            //pre signed url for PutObjectCommand
+            productUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
 
+            const product = await prisma.product.create({
+                data: {
+                    name: name,
+                    title: title,
+                    description: description,
+                    tags: tagsArray,
+                    adminId: adminId
+                }
+            })
+
+            if (s3Key && file){
+                await prisma.productMetadata.create({
+                    data: {
+                        name: file.originalname,
+                        url: s3Key,
+                        type: file.mimetype,
+                        size: file.size.toString(),
+                        productId: product.id,
+                    }
+                })
+            }
         }  
+        res.status(200).json({
+            message: "Product udpated successfully",
+            success: true,
+            productUrl
+        })
+        return
 
 
     } catch (error) {
@@ -347,5 +388,6 @@ export const uploadProducts = async(req: Request, res: Response): Promise<void> 
             success: false,
             error
         })
+        return
     }
 }

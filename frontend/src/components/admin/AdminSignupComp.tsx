@@ -70,8 +70,7 @@ export const AdminSignupComp = () => {
         headers: {
           'Content-Type': file.type, // Set the content type of the file
         },
-      });
-  
+      });  
       console.log('File uploaded successfully');
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -262,7 +261,8 @@ export const AdminSignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p>
+                  <a href="/provider/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
                 </div>
               </form>
             )}

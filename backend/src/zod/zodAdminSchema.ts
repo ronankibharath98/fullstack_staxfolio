@@ -36,5 +36,6 @@ export const AdminSigninInput = z.object({
 export const UploadProductInput = z.object({
     name: z.string(),
     title: z.string(),
-    description: z.string()
+    description: z.string(),
+    tags: z.string(),
 })

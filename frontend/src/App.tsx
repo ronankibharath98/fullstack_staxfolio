@@ -15,9 +15,9 @@ function App() {
         <Route path="/authoptions" element = {<AuthOptions/>}/>
         <Route path="/signup" element= {<Signup/>}/>
         <Route path="/signin" element= {<Signin/>}/>
-        <Route path="/admin/signup" element= {<AdminSignup/>}/>
-        <Route path="/admin/signin" element= {<AdminSignin/>}/>
-        <Route path="/admin/welcome" element= {<AdminHome/>}/>
+        <Route path="/provider/signup" element= {<AdminSignup/>}/>
+        <Route path="/provider/signin" element= {<AdminSignin/>}/>
+        <Route path="/provider/welcome" element= {<AdminHome/>}/>
         <Route path="/welcome" element= {<AdminHome/>}/>
       </Routes>
     </BrowserRouter>
