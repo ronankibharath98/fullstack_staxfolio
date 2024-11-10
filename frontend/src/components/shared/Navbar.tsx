@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import axios from "axios";
-import { USER_API_END_POINT } from "../utils/constant";
+import { USER_API_END_POINT } from "../../lib/constant";
 import { setUser } from "@/redux/authSlice";
 
 

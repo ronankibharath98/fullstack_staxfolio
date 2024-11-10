@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import { USER_API_END_POINT } from "../utils/constant"
+import { USER_API_END_POINT } from "../../lib/constant"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/redux/store"
 import { setLoading, setUser } from "@/redux/authSlice"

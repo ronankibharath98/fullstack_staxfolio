@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux"
 import type { RootState } from "@/redux/store"
-import { ProductGridCard } from "@/components/user/productGridCard"
+import { ProductGridCard } from "@/components/user/ProductGridCard"
 
 export const AdminHome = () => {
   const { loading, user } = useSelector((store: RootState) => store.auth)
@@ -13,7 +13,6 @@ export const AdminHome = () => {
             Top Product Listing 
           </div>
           <div className="border-t-2">
-            <ProductGridCard/>
             <ProductGridCard/>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import express from "express";
-import { emailVerify, getProducts, otpVerify, userSignin, userSignup } from "../controllers/user.controller";
+import { emailVerify, otpVerify, userLogout, userSignin, userSignup } from "../controllers/user.controller";
 import { singleUpload } from "../middleware/multer";
 import { isAuthenticated } from "../middleware/isAuthenticated";
 
@@ -11,6 +11,6 @@ router.route("/email").post(emailVerify);
 router.route("/email/verify-otp").post(otpVerify);
 router.route("/signup").post(singleUpload, userSignup);
 router.route("/signin").post(userSignin);
-router.route("/getProducts").get(isAuthenticated, getProducts);
+router.route("/logout").post(userLogout);
 
 export default router;

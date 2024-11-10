@@ -292,21 +292,19 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
     }
 }
 
-export const getProducts = async(req: Request, res: Response): Promise<void> => {
-    try {
-        const products = await prisma.product.findMany();
-
-        res.status(200).json({
-            message: "Products retrived successfully",
-            success: true,
-            products
+export const userLogout = async(req: Request, res: Response): Promise<void> => {
+    try{
+        res.status(200).cookie("token", "",{maxAge: 0} ).json({
+            message: "User logged out successfully",
+            success: true
         })
-    } catch (error) {
+        return
+    } catch(error){
         res.status(500).json({
-            message: "Server error in view products",
-            success: false,
-            error
+            message: "Server error in user logout",
+            success: false
         })
         return
     }
 }
+

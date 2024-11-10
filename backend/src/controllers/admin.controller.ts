@@ -197,8 +197,8 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
 
         res.status(200).cookie("token", token,{
             maxAge: 1 * 24 * 60 * 60 * 1000,
-            // httpOnly: true,
-            // samesite: "strict"
+            httpOnly: true,
+            sameSite: "lax"
         }).json({
             message: "Admin registered successfully",
             success: true,
@@ -272,8 +272,9 @@ export const adminSignin = async(req: Request, res: Response): Promise<void> => 
         const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, { expiresIn: "1d"})
 
         res.status(200).cookie("token", token, {
-            // httpOnly: true,
-            maxAge: 1 * 24 * 60 * 60 * 1000
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax"
         }).json({
             message: "Admin logged in successfully",
             success: true,
@@ -310,84 +311,3 @@ export const adminLogout = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
-export const uploadProducts = async(req: Request, res: Response): Promise<void> => {
-    try {
-        const { name, title, description, tags} =  UploadProductInput.parse(req.body);
-        const adminId = req.id 
-        const file = req.file;
-
-        const productExists = await prisma.product.findUnique({
-            where: {name}
-        })
-
-        if(productExists){
-            res.status(404).json({
-                message: "Product with the same name already exists",
-                success: false,
-            })
-            return
-        }
-        
-        if (!adminId) {
-            res.status(404).json({
-                message: "Admin not found",
-                success: false,
-            });
-            return;
-        }
-        const tagsArray = tags ? tags.split(',') : [];
-        const orgEmail = req.email;
-        let productUrl: string | undefined;
-        let s3Key: string | undefined;
-        if(file){
-            s3Key = `/admin/${orgEmail}/uploads/productImage/${Date.now()}_${file.originalname}`;
-            const params= {
-                Bucket: process.env.AWS_S3_BUCKET as string,
-                Key: s3Key,
-                ContentType: file.mimetype as string,
-                // ACL: 'public-read' as ObjectCannedACL,
-            }
-
-            const command  = new PutObjectCommand(params)
-            //pre signed url for PutObjectCommand
-            productUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
-
-            const product = await prisma.product.create({
-                data: {
-                    name: name,
-                    title: title,
-                    description: description,
-                    tags: tagsArray,
-                    adminId: adminId
-                }
-            })
-
-            if (s3Key && file){
-                await prisma.productMetadata.create({
-                    data: {
-                        name: file.originalname,
-                        url: s3Key,
-                        type: file.mimetype,
-                        size: file.size.toString(),
-                        productId: product.id,
-                    }
-                })
-            }
-        }  
-        res.status(200).json({
-            message: "Product udpated successfully",
-            success: true,
-            productUrl
-        })
-        return
-
-
-    } catch (error) {
-        res.status(500).json({
-            message: "Server error in uploading product",
-            success: false,
-            error
-        })
-        return
-    }
-}
