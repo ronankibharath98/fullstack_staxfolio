@@ -3,7 +3,7 @@ import { PutObjectCommand, GetObjectAclCommand , S3Client } from "@aws-sdk/clien
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { sendEmailConf } from "../utils/emailAuthConfirmation";
 import { fromEnv } from "@aws-sdk/credential-provider-env";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -280,7 +280,8 @@ export const adminSignin = async(req: Request, res: Response): Promise<void> => 
             success: true,
             admin: {
                 email: admin.orgEmail,
-                name: admin.orgName
+                name: admin.orgName,
+                role: admin.role
             }
         })
         return
@@ -311,3 +312,93 @@ export const adminLogout = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
+export const updateAdminProfile = async(req: Request, res: Response): Promise<void> => {
+    try {
+        const { orgName, oldPassword, newPassword } = req.body;
+        const adminId = req.id;
+
+        const admin = await prisma.admin.findUnique({
+            where: {
+                id: adminId
+            }
+        })
+
+        if (!admin){
+            res.status(404).json({ message: "Admin not found", success: false })
+            return
+        }
+
+        const updateData: any = {};
+
+        if (orgName) {
+            updateData.orgName = orgName;
+        }
+        if (newPassword) {
+            if(!oldPassword){
+                res.status(400).json({ message: "Current password is required",status: false })
+                return
+            }
+            if(!admin.password){
+                res.status(404).json({ message: "Admin password not found", success: false })
+                return
+            }    
+            const isPasswordMatch = await bcrypt.compare(oldPassword, admin.password)
+            if (!isPasswordMatch) {
+                res.status(400).json({ message: "Current password did not match", success: false });
+                return;
+            }
+            const hashedPasssword = await bcrypt.hash(newPassword,10);
+            updateData.password = hashedPasssword
+        }
+
+        // Update the admin profile
+        const updatedAdmin = await prisma.admin.update({
+            where: { id: adminId },
+            data: updateData,
+        });
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+            success: true,
+            admin: updatedAdmin,
+        });
+        return
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error in edit profile",
+            success: false
+        })
+    }
+}
+
+export const getAdminProducts = async(req: Request, res: Response): Promise<void> => {
+    try {
+        const adminId = req.id
+        
+        const adminProducts = await prisma.product.findMany({
+            where: {
+                adminId: adminId
+            }
+        })
+
+        if(!adminProducts || adminProducts.length == 0){
+            res.status(404).json({
+                message: "No products found for admin",
+                success: true
+            })
+            return
+        }
+        res.status(200).json({
+            message: "Successfully fetched admin products",
+            success: true,
+            adminProducts
+        })
+        return
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error in fetching Admin products",
+            success: false
+        })
+        return
+    }
+}

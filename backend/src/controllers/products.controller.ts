@@ -12,7 +12,7 @@ const s3 = new S3Client({
     region: process.env.AWS_REGION
 })
 
-export const uploadProducts = async(req: Request, res: Response): Promise<void> => {
+export const addProducts = async(req: Request, res: Response): Promise<void> => {
     try {
         const { name, title, description, tags} =  UploadProductInput.parse(req.body);
         const adminId = req.id

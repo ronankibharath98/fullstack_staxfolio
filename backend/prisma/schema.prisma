@@ -21,6 +21,11 @@ model VerifyAdminOtp {
   verified      Boolean   @default(false) // To track OTP verification status
 }
 
+enum Role {
+  MANAGER
+  USER
+}
+
 model User {
   id            String          @id @default(uuid())
   firstName     String?
@@ -30,6 +35,7 @@ model User {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @default(now())
   metadata      UserMetadata[]  @relation("UserMetadataRelation")
+  role          Role            @default(USER)
 }
 
 model UserMetadata {
@@ -45,6 +51,7 @@ model UserMetadata {
 
 model Admin {
   id            String            @id @default(uuid())
+  role          String            @default("Admin")
   orgName       String?
   orgEmail      String            @unique
   password      String?

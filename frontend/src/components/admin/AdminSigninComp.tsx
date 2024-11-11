@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
-import { USER_API_END_POINT } from "../../lib/constant";
+import { ADMIN_API_END_POINT } from "../../lib/constant";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector} from "react-redux";
-import { setLoading, setUser } from "@/redux/authSlice";
+import { setLoading, setUser, setRole } from "@/redux/authSlice";
 import type { RootState } from "@/redux/store";
 
 export const AdminSigninComp = () => {
@@ -11,7 +11,7 @@ export const AdminSigninComp = () => {
         orgEmail: "",
         password: ""
     })
-    const { loading, user } = useSelector((store: RootState) => store.auth);
+    const { loading, user, role } = useSelector((store: RootState) => store.auth);
     const [ error, setError ] = useState<string | null>(null)
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -35,11 +35,12 @@ export const AdminSigninComp = () => {
             return
         }
         try {
-            const response = await axios.post(`${USER_API_END_POINT}/api/v1/admin/signin`, input, {
+            const response = await axios.post(`${ADMIN_API_END_POINT}/signin`, input, {
                 withCredentials: true
             });
             if(response.data.success){
                 dispatch(setUser(response.data.admin.email))
+                dispatch(setRole(response.data.admin.role))
                 navigate("/welcome");
             }
         } catch (error: any ) {

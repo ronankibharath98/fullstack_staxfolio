@@ -10,7 +10,6 @@ interface JwtPayload {
 export const isAuthenticated = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token = req.cookies.token;
-        console.log(token)
         if(!token){
             res.status(401).json({
                 message: "User not authenticated",
@@ -20,7 +19,6 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
         }
         
         const decode = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-        console.log(decode)
         if(!decode || !decode.userId){
             res.status(401).json({
                 messsage: "Invalid token",

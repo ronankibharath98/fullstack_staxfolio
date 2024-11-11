@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-type Role = null | "provider" | "user" 
+type Role = null | "Provider" | "Admin" | "User" 
 
 interface AuthState {
     loading: boolean;

@@ -4,7 +4,7 @@ import { ProductGridCard } from "@/components/user/ProductGridCard"
 
 export const AdminHome = () => {
   const { loading, user } = useSelector((store: RootState) => store.auth)
-  console.log(user)
+  
   return (
     <div className="p-10">
       {user? (

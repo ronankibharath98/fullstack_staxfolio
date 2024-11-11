@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import { USER_API_END_POINT } from "../../lib/constant"
+import { ADMIN_API_END_POINT } from "../../lib/constant"
 
 export const AdminSignupComp = () => {
   const [input, setInput] = useState({
@@ -35,7 +35,7 @@ export const AdminSignupComp = () => {
   const handleGenerateOtp = async () => {
     setLoading(true);
     try {
-      await axios.post(`${USER_API_END_POINT}/api/v1/admin/email`, { orgEmail: input.orgEmail })
+      await axios.post(`${ADMIN_API_END_POINT}/email`, { orgEmail: input.orgEmail })
       setStep(2);
     } catch (error: any) {
       setError(error.response?.data?.message || "Error generating OTP, Please try again.")
@@ -48,7 +48,7 @@ export const AdminSignupComp = () => {
   const handleVerifyOtp = async () => {
     setLoading(true)
     try {
-      const isValid = await axios.post(`${USER_API_END_POINT}/api/v1/admin/email/verify-otp`, { orgEmail: input.orgEmail, otp: input.otp })
+      const isValid = await axios.post(`${ADMIN_API_END_POINT}/email/verify-otp`, { orgEmail: input.orgEmail, otp: input.otp })
       if (isValid) {
         setStep(3);
       } else {
@@ -91,7 +91,7 @@ export const AdminSignupComp = () => {
         formData.append("file", file); // Append the file to the FormData object
       }
 
-      const response = await axios.post(`${USER_API_END_POINT}/api/v1/admin/signup`, formData, {
+      const response = await axios.post(`${ADMIN_API_END_POINT}/signup`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         }

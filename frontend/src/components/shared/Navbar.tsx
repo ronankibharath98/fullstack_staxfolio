@@ -7,24 +7,28 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import axios from "axios";
-import { USER_API_END_POINT } from "../../lib/constant";
-import { setUser } from "@/redux/authSlice";
+import { ADMIN_API_END_POINT } from "../../lib/constant";
+import { setRole, setUser } from "@/redux/authSlice";
+import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 
 export const Navbar = () => {
-    const { user } = useSelector((store: RootState) => store.auth);
+    const { user, role } = useSelector((store: RootState) => store.auth);
     const dispatch = useDispatch();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
-    const logoutHandler = async() => {
+
+    const logoutHandler = async () => {
         try {
-            const response = await axios.get(`${USER_API_END_POINT}/api/v1/admin/logout`, {withCredentials: true})
-            if (response.data.success){
+            const response = await axios.get(`${ADMIN_API_END_POINT}/signout`, { withCredentials: true })
+            if (response.data.success) {
                 dispatch(setUser(null))
-                // navigate("/authoptions")
+                dispatch(setRole(null))
+                window.location.href = "/authoptions"
             }
         } catch (error) {
-            
+            alert(error || "Error occured")
         }
     }
     return (
@@ -35,12 +39,12 @@ export const Navbar = () => {
                         <img src="/logo.svg" alt="Logo" className="object-contain w-auto h-full" />
                     </div>
 
-                    <div className="flex items-center justify-center font-semibold text-xl text-blue-600">
+                    <div className="flex items-center justify-center font-semibold text-xl text-black">
                         Staxfolio
                     </div>
                 </div>
                 <div>
-                    { user? (
+                    {user ? (
                         <div className="hidden md:flex font-medium text-gray-700 space-x-5">
                             <div className="hover:text-violet-500">
                                 Launches
@@ -54,18 +58,22 @@ export const Navbar = () => {
                         </div>
                     ) : (
                         <div>
-                            
                         </div>
                     )}
                 </div>
+
                 <div className="flex items-center space-x-5">
-                    {user ? (
+                    {user && role == "Admin" ? (
                         <div className="flex items-center space-x-8">
+                            <div>
+                                <Button>
+                                    Add Product
+                                </Button>
+                            </div>
                             <div className="cursor-pointer text-gray-500 hover:text-gray-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                                 </svg>
-
                             </div>
                             <div>
                                 <Popover>
@@ -86,8 +94,8 @@ export const Navbar = () => {
                                                 />
                                             </Avatar>
                                             <div>
-                                                <h4 className='font-medium'>{user?.firstName || "Admin"}</h4>
-                                                <p className='text-sm text-muted-foreground'>{user?.profile?.bio || "Admin Dashboard"}</p>
+                                                <h4 className='font-medium'>{user.split("@")[0] || "Admin"}</h4>
+                                                <p className='text-sm text-muted-foreground'>{user.role || `${role} Profile`}</p>
                                             </div>
                                         </div>
                                         <div className="flex flex-col mt-3 space-y-3 text-gray-600">
@@ -102,7 +110,10 @@ export const Navbar = () => {
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
                                                 </svg>
-                                                My Products
+                                                <div onClick={() => navigate("/provider/myProducts")}>
+                                                    My Products
+                                                </div>
+                                                
                                             </div>
                                             <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
