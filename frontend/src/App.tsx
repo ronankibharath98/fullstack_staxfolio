@@ -6,6 +6,7 @@ import { AdminSignup } from './pages/admin/AdminSignup'
 import { AdminHome } from './pages/admin/AdminHome'
 import { AuthOptions } from './pages/auth'
 import { AdminProducts } from './pages/admin/AdminProducts'
+import { AdminProfile } from './pages/admin/AdminProfile'
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Route path="/provider/signin" element={<AdminSignin />} />
       <Route path="/provider/welcome" element={<AdminHome />} />
       <Route path="/provider/myProducts" element={<AdminProducts />} />
+      <Route path="/provider/profile" element={<AdminProfile />} />
       <Route path="/welcome" element={<AdminHome />} />
     </Routes>
   )

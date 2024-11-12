@@ -312,6 +312,41 @@ export const adminLogout = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
+export const getAdminProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const adminId = req.id
+
+        const adminProfile = await prisma.admin.findUnique({
+            where: {
+                id: adminId
+            }
+        })
+        if(!adminProfile){
+            res.status(404).json({
+                message: "Admin profile data not found",
+                success: false
+            })
+            return
+        }
+        res.status(200).json({
+            message: "Admin profile data fetched successfully",
+            success: true,
+            adminProfile:{
+                email: adminProfile.orgEmail,
+                name: adminProfile.orgName,
+                role: adminProfile.role
+            }
+        })
+        return
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error in retriving admin profile data",
+            success: false
+        })
+        return
+    }
+}
+
 export const updateAdminProfile = async(req: Request, res: Response): Promise<void> => {
     try {
         const { orgName, oldPassword, newPassword } = req.body;

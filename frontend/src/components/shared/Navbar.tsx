@@ -8,27 +8,30 @@ import type { RootState } from "@/redux/store";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import axios from "axios";
 import { ADMIN_API_END_POINT } from "../../lib/constant";
-import { setRole, setUser } from "@/redux/authSlice";
+import { setLoading, setRole, setUser } from "@/redux/authSlice";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 
 
 export const Navbar = () => {
-    const { user, role } = useSelector((store: RootState) => store.auth);
+    const { loading, user, role } = useSelector((store: RootState) => store.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
 
     const logoutHandler = async () => {
+        setLoading(true)
         try {
             const response = await axios.get(`${ADMIN_API_END_POINT}/signout`, { withCredentials: true })
             if (response.data.success) {
-                dispatch(setUser(null))
-                dispatch(setRole(null))
-                window.location.href = "/authoptions"
+                dispatch(setUser(null));
+                dispatch(setRole(null));
+                navigate("/authoptions");
             }
         } catch (error) {
             alert(error || "Error occured")
+        } finally{
+            setLoading(false)
         }
     }
     return (
@@ -39,20 +42,20 @@ export const Navbar = () => {
                         <img src="/logo.svg" alt="Logo" className="object-contain w-auto h-full" />
                     </div>
 
-                    <div className="flex items-center justify-center font-semibold text-xl text-black">
+                    <div className="hidden sm:flex items-center justify-center font-semibold text-xl text-black">
                         Staxfolio
                     </div>
                 </div>
                 <div>
                     {user ? (
                         <div className="hidden md:flex font-medium text-gray-700 space-x-5">
-                            <div className="hover:text-violet-500">
+                            <div className="cursor-pointer hover:text-violet-500">
                                 Launches
                             </div>
-                            <div className="hover:text-violet-500">
+                            <div className="cursor-pointer hover:text-violet-500">
                                 Products
                             </div>
-                            <div className="hover:text-violet-500">
+                            <div className="cursor-pointer hover:text-violet-500">
                                 Community
                             </div>
                         </div>
@@ -70,7 +73,7 @@ export const Navbar = () => {
                                     Add Product
                                 </Button>
                             </div>
-                            <div className="cursor-pointer text-gray-500 hover:text-gray-700">
+                            <div className="hidden sm:flex cursor-pointer text-gray-500 hover:text-gray-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                                 </svg>
@@ -103,8 +106,9 @@ export const Navbar = () => {
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                 </svg>
-
-                                                Profile
+                                                <div onClick={() => navigate("/provider/profile")}>
+                                                    Profile
+                                                </div>
                                             </div>
                                             <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
