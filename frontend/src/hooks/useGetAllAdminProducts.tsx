@@ -19,14 +19,17 @@ const useGetAllAdminProducts = () => {
                 const response = await axios.get(`${ADMIN_API_END_POINT}/getMyProducts`, {
                     withCredentials: true,
                 });
+                console.log(response.data)
                 if (response.data.success) {
                     dispatch(setAllAdminProducts(response.data.adminProducts));
                 }
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     setError(error.response?.data?.message || "An error occurred");
+                    dispatch(setAllAdminProducts(null));
                 } else {
                     setError("An unexpected error occurred");
+                    dispatch(setAllAdminProducts(null));
                 }
             } finally {
                 setLoading(false); // Stop loading

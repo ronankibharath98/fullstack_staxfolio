@@ -51,7 +51,7 @@ export const SigninComp = () => {
       <div className="flex justify-center">
         <div className="border drop-shadow-xl rounded-xl bg-white border-slate-100 pt-5 pb-10 px-10">
           <div className="flex flex-col items-center mb-8">
-            <img src="logo.svg" alt="Logo" className="w-[90px] h-[90px] mb-4" />
+            <img src="/logo.svg" alt="Logo" className="w-[90px] h-[90px] mb-4" />
             <h1 className="text-gray-700 text-center font-semibold text-2xl">
               Welcome back
             </h1>

@@ -1,4 +1,4 @@
-import { AdminProfileCard } from "@/components/admin/AdminProfileCard"
+import { AdminProfileCard } from "@/components/organisms/AdminProfileCard"
 
 export const AdminProfile = () => {
     return(

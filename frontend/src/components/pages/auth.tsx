@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms/button";
 import { setRole } from "@/redux/authSlice"
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";

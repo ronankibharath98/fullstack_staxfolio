@@ -114,7 +114,7 @@ export const SignupComp = () => {
       <div className="flex justify-center">
         <div className="border drop-shadow-sm rounded-2xl bg-white border-slate-100 py-5 px-10">
           <div className="flex flex-col items-center mb-8">
-            <img src="logo.svg" alt="Logo" className="w-[80px] h-[80px] mb-4" />
+            <img src="/logo.svg" alt="Logo" className="w-[80px] h-[80px] mb-4" />
             <h1 className="text-gray-700 text-center font-semibold text-2xl">
               SIGN UP
             </h1>

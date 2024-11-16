@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux"
 import type { RootState } from "@/redux/store"
-import { ProductGridCard } from "@/components/user/ProductGridCard"
+import { ProductGridCard } from "@/components/molecules/ProductGridCard"
 
-export const AdminHome = () => {
+export const Home = () => {
   const { loading, user } = useSelector((store: RootState) => store.auth)
   
   return (

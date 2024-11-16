@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/user/ProductCard";
+import { ProductCard } from "@/components/molecules/ProductCard";
 import useGetAllAdminProducts from "@/hooks/useGetAllAdminProducts"
 
 interface Product {
@@ -14,6 +14,7 @@ interface Product {
 
 export const AdminProducts = () => {
     const { allAdminProducts, error, loading } = useGetAllAdminProducts()
+    console.log(allAdminProducts)
     return (
         <div className="p-10">
             {allAdminProducts ? (
