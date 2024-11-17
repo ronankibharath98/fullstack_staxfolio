@@ -8,6 +8,7 @@ import { AuthOptions } from './components/pages/auth'
 import { AdminProducts } from './components/pages/AdminProducts'
 import { AdminProfile } from './components/pages/AdminProfile'
 import { ProductGridCard } from './components/molecules/ProductGridCard'
+import { AdminAddProduct } from './components/pages/AdminAddProduct'
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
       <Route path="/welcome" element={<Home />} />
       <Route path="/admin/myProducts" element={<AdminProducts />} />
       <Route path="/admin/profile" element={<AdminProfile />} />
+      <Route path="/admin/add-product" element={<AdminAddProduct />} />
       <Route path="/products" element={<ProductGridCard/>}/>
     </Routes>
   )

@@ -417,7 +417,7 @@ export const getAdminProducts = async(req: Request, res: Response): Promise<void
         })
 
         if(!adminProducts || adminProducts.length == 0){
-            res.status(404).json({
+            res.status(204).json({
                 message: "No products found for admin",
                 success: true
             })

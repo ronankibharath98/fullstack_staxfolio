@@ -19,7 +19,6 @@ const useGetAllAdminProducts = () => {
                 const response = await axios.get(`${ADMIN_API_END_POINT}/getMyProducts`, {
                     withCredentials: true,
                 });
-                console.log(response.data)
                 if (response.data.success) {
                     dispatch(setAllAdminProducts(response.data.adminProducts));
                 }
