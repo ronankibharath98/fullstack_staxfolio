@@ -2,10 +2,12 @@ import { Button } from "@/components/atoms/button";
 import { setRole } from "@/redux/authSlice"
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
+import { useNavigate } from "react-router-dom";
 
 export const AuthOptions = () => {
-    const { role } = useSelector((store: RootState) => store.auth); // null, 'provider', or 'user'
+    const { role } = useSelector((store: RootState) => store.auth); // null, 'Admin', 'Manager', or 'user'
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     return (
         <div className="bg-[#e9edf6] flex flex-col justify-center h-screen">
@@ -16,30 +18,37 @@ export const AuthOptions = () => {
                         <h1 className="text-gray-700 text-center font-semibold text-2xl">
                             Welcome to Staxfolio
                         </h1>
-                        <p className="text-sm font-medium text-gray-500 mt-5">
-                            Select your role to continue.
-                        </p>
+                        { !role? (
+                            <p className="text-sm font-medium text-gray-500 mt-5">
+                                Select your role to continue.
+                            </p>
+                        ): (
+                            <p className="text-sm font-medium text-gray-500 mt-5">
+                                Select one of the options.
+                            </p>
+                        )}
+                        
                     </div>
                     {/* Role Selection */}
                     {role === null ? (
                         <div className="flex flex-col space-y-5">
-                            <Button onClick={() => dispatch(setRole("provider"))} className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-3">
+                            <Button onClick={() => dispatch(setRole("Admin"))} className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-3">
                                 I'm a Software Provider
                             </Button>
-                            <Button onClick={() => dispatch(setRole("user"))} className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-3">
+                            <Button onClick={() => dispatch(setRole("User"))} className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-3">
                                 I'm a User
                             </Button>
                         </div>
                     ) : (
                         <div>
                             <h2 className="text-xl font-medium text-center mb-4">
-                                {role === "provider" ? "Provider" : "User"} Login or Signup
+                                {role === "Admin" ? "Admin" : "User"} Signin or Signup
                             </h2>
                             <div className="flex flex-col space-y-3">
-                                <Button onClick={() => window.location.href=`/${role}/signin`} className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
+                                <Button onClick={() => navigate(`/${role.toLowerCase()}/signin`)} className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
                                     Sign in
                                 </Button>
-                                <Button onClick={() => window.location.href= `/${role}/signup` }  className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
+                                <Button onClick={() => navigate(`/${role.toLowerCase()}/signup`) }  className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
                                     Sign up
                                 </Button>
                             </div>

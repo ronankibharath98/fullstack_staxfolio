@@ -11,6 +11,7 @@ import { ADMIN_API_END_POINT } from "../../lib/constant";
 import { setLoading, setRole, setUser } from "@/redux/authSlice";
 import { Button } from "../atoms/button";
 import { useNavigate } from "react-router-dom";
+import { setAllAdminProducts, setAllProducts } from "@/redux/productSlice";
 
 
 export const Navbar = () => {
@@ -26,6 +27,8 @@ export const Navbar = () => {
             if (response.data.success) {
                 dispatch(setUser(null));
                 dispatch(setRole(null));
+                dispatch(setAllProducts([]));
+                dispatch(setAllAdminProducts([]));
                 navigate("/authoptions");
             }
         } catch (error) {
@@ -41,7 +44,6 @@ export const Navbar = () => {
                     <div>
                         <img src="/logo.svg" alt="Logo" className="object-contain w-auto h-full" />
                     </div>
-
                     <div className="hidden sm:flex items-center justify-center font-semibold text-xl text-black">
                         Staxfolio
                     </div>
@@ -66,13 +68,18 @@ export const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-5">
-                    {user && role == "Admin" ? (
+                    {user && (role == "admin" || role == "user") ? (
                         <div className="flex items-center space-x-8">
-                            <div>
+                            {role == "admin" ? (
+                                <div>
                                 <Button onClick={(() => navigate("/admin/add-product"))}>
                                     Add Product
                                 </Button>
                             </div>
+                            ):(
+                                <>
+                                </>
+                            )}
                             {/* <!-- component --> */}
                             <button className="inline-block relative cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,28 +106,42 @@ export const Navbar = () => {
                                                 />
                                             </Avatar>
                                             <div>
-                                                <h4 className='font-medium'>{user.split("@")[0] || "Admin"}</h4>
+                                                <h4 className='font-medium'>{user?.firstName}</h4>
                                                 <p className='text-sm text-muted-foreground'>{user.role || `${role} Profile`}</p>
                                             </div>
                                         </div>
                                         <div className="flex flex-col mt-3 space-y-3 text-gray-600">
-                                            <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                </svg>
-                                                <div onClick={() => navigate("/admin/profile")}>
-                                                    Profile
+                                            {role == "admin" ? (
+                                                <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    </svg>
+                                                    <div onClick={() => navigate("/admin/profile")}>
+                                                        Profile
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
-                                                </svg>
-                                                <div onClick={() => navigate("/admin/myProducts")}>
-                                                    My Products
+                                            ) : (
+                                                <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    </svg>
+                                                    <div onClick={() => navigate("/profile")}>
+                                                        Profile
+                                                    </div>
                                                 </div>
-
-                                            </div>
+                                            )}
+                                            {role == "admin" ? (
+                                                <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
+                                                    </svg>
+                                                    <div onClick={() => navigate("/admin/myProducts")}>
+                                                        My Products
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <></>
+                                            )}
                                             <div className='flex w-fit items-center gap-2 cursor-pointer hover:text-violet-800'>
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z" />

@@ -1,17 +1,19 @@
-type AdminData = {
-    email: string;
-    name: string;
-    role: string;
+type ProfileData = {
+    email: string,
+    name?: string,
+    firstName?: string,
+    lastName?: string,
+    role: string
 };
 
 type ProfileProps = {
-    userName: string;
-    adminData: AdminData;
-    role: string;
+    userName: string,
+    profileData: ProfileData,
+    role: string
 };
 
 
-export const ProfileCard: React.FC<ProfileProps> = ({ userName, adminData, role }) => {
+export const ProfileCard: React.FC<ProfileProps> = ({ userName, profileData }) => {
     return (
         <div>
             <div className="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -42,9 +44,9 @@ export const ProfileCard: React.FC<ProfileProps> = ({ userName, adminData, role 
                     <img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={"https://github.com/shadcn.png"} alt="Profileimage" />
                     <div className="flex flex-col ml-5">
                         <h5 className="text-2xl font-medium text-gray-900 dark:text-white">{userName}</h5>
-                        <span className="text-l text-gray-500 dark:text-gray-400">{role}</span>
+                        <span className="text-l text-gray-500 dark:text-gray-400">{profileData?.role}</span>
 
-                        <span>Email: {adminData?.email || "email@gamil.com"}</span>
+                        <span>Email: {profileData?.email || "N/A"}</span>
 
                         {userName ?
                             (

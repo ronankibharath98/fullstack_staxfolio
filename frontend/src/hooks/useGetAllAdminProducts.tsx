@@ -11,7 +11,7 @@ const useGetAllAdminProducts = () => {
     const { allAdminProducts } = useSelector((store: RootState) => store.product);
     const { loading } = useSelector((store: RootState) => store.auth);
     const [error, setError] = useState<string | null>(null)
-
+    
     useEffect(() => {
         const fetchAllAdminProducts = async () => {
             setLoading(true);

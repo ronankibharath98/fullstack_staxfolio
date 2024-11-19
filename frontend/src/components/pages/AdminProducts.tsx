@@ -15,29 +15,41 @@ interface Product {
 export const AdminProducts = () => {
     const { allAdminProducts, error, loading } = useGetAllAdminProducts()
     console.log(allAdminProducts)
+    // If there is an error, display it
+    if (error) {
+        return <div className="text-red-500">{error}</div>;
+    }
+
+    // If data is still loading, show a loading state
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    // If there are no products, display nothing
+    if (!allAdminProducts || allAdminProducts.length === 0) {
+        return(
+            <div className="flex h-screen text-xl font-semibold items-center justify-center">
+                You do not have products to display
+            </div>
+        );
+    }
+
+    // If products exist, render the content
     return (
         <div className="p-10">
-            {allAdminProducts ? (
+            <div className="text-2xl border-b-2 font-medium mb-3 pb-1">
+                My Products<span className="text-">({allAdminProducts.length})</span>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2">
                 <div>
-                    <div className="text-2xl border-b-2 font-medium mb-3 pb-1">
-                        My Products<span className="text-">({allAdminProducts.length})</span> 
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2">
-                        <div>
-                        {allAdminProducts.map((p: Product) => (
-                            <div key={p.id}>
-                                <ProductCard name={p.name} title={p.title} comments={p.comments} tags={p.tags} />
-                            </div>
-                        ))}
+                    {allAdminProducts.map((p: Product) => (
+                        <div key={p.id}>
+                            <ProductCard name={p.name} title={p.title} comments={p.comments} tags={p.tags} />
                         </div>
-                    </div>
+                    ))}
                 </div>
-            ) : (
-                <div>
-                    {error}
-                </div>
-            )
-            }
+            </div>
+
         </div>
     )
 }

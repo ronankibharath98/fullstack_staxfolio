@@ -48,11 +48,11 @@ export const AdminProfileComp = () => {
     }, [])
     return (
         <>
-            {user && role == "Admin" ? (
+            {user && role == "admin" ? (
                 <div className="px-20  lg:px-40 pt-10  h-screen w-full grid grid-cols-1 lg:grid-cols-3 space-x-5">
                     <div className="flex flex-col col-span-2 space-y-5 w-full h-auto">
                         <div>
-                            <ProfileCard userName={adminData?.name} adminData={adminData} role={role}/>
+                            <ProfileCard userName={adminData?.name} profileData={adminData}/>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                             <div className="p-5 flex justify-between items-center">

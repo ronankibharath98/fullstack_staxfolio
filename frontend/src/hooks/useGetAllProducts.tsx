@@ -19,6 +19,7 @@ const useGetAllProducts = () => {
                 const response = await axios.get(`${STACK_API_END_POINT}/getProducts`, {
                     withCredentials: true,
                 });
+                
                 if(response.data.success){
                     dispatch(setAllProducts(response.data.products));
                 }

@@ -4,7 +4,7 @@ import axios from "axios"
 import { USER_API_END_POINT } from "../../lib/constant"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/redux/store"
-import { setLoading, setUser } from "@/redux/authSlice"
+import { setLoading, setRole, setUser } from "@/redux/authSlice"
 
 export const SigninComp = () => {
   const [input, setInput] = useState({
@@ -28,15 +28,17 @@ export const SigninComp = () => {
     }
     dispatch(setLoading(true))
     try {
-      const response = await axios.post(`${USER_API_END_POINT}/api/v1/user/signin`, input)
-      console.log(response.data.user)
-      dispatch(setUser(response.data.user))
+      const response = await axios.post(`${USER_API_END_POINT}/signin`, input,{
+        withCredentials: true
+      })
+      dispatch(setUser(response.data.user.firstName))
+      dispatch(setRole(response.data.user.role))
       setError("");
     } catch (error: any) {
       setError(error.response?.data?.message || "An error occured")
+      console.log(error)
     } finally{
         dispatch(setLoading(false));
-        setError("")
     }
   };
 
@@ -108,7 +110,7 @@ export const SigninComp = () => {
                 </button>
               </div>
               <div className="flex text-sm text-left space-x-1">
-                <p className="font-medium text-gray-600">Dont't have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signup</a>
+                <p className="font-medium text-gray-600">Dont't have an account?</p><a href="/user/signup" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signup</a>
               </div>
             </form>
           </div>

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-type Role = null | "Admin" | "Manager" | "User" 
+type Role = null | "admin" | "manager" | "user" 
 
 interface AuthState {
     loading: boolean;
@@ -27,9 +27,14 @@ export const authSlice = createSlice({
         },
         setRole: (state, action) => {
             state.role = action.payload
+        },
+        logout: (state) => {
+            state.loading = false,
+            state.user = null,
+            state.role = null
         }
     }
 })
 
-export const { setLoading, setUser, setRole } = authSlice.actions;
+export const { setLoading, setUser, setRole, logout } = authSlice.actions;
 export default authSlice.reducer;

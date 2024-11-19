@@ -29,9 +29,10 @@ export const SignupComp = () => {
   }
 
   const handleGenerateOtp = async () => {
+    setError(null)
     setLoading(true)
     try {
-      await axios.post(`${USER_API_END_POINT}/api/v1/user/email`, { email: input.email })
+      await axios.post(`${USER_API_END_POINT}/email`, { email: input.email })
       setStep(2);
     } catch (error: any) {
       console.log(error)
@@ -43,9 +44,10 @@ export const SignupComp = () => {
   }
 
   const handleVerifyOtp = async () => {
+    setError(null)
     setLoading(true)
     try {
-      const isValid = await axios.post(`${USER_API_END_POINT}/api/v1/user/email/verify-otp`, { email: input.email, otp: input.otp })
+      const isValid = await axios.post(`${USER_API_END_POINT}/email/verify-otp`, { email: input.email, otp: input.otp })
       if (isValid) {
         setStep(3); // Move to registration step
       } else {
@@ -79,6 +81,7 @@ export const SignupComp = () => {
 
   // Function to handle final registration
   const handleRegistration = async () => {
+    setError(null)
     setLoading(true)
     try {
       const formData = new FormData();
@@ -91,7 +94,7 @@ export const SignupComp = () => {
         formData.append("file", file); // Append the file to the FormData object
       }
 
-      const response = await axios.post(`${USER_API_END_POINT}/api/v1/user/signup`, formData, {
+      const response = await axios.post(`${USER_API_END_POINT}/signup`, formData, {
         headers: {
           "Content-Type": "application/json",
         }
@@ -171,7 +174,7 @@ export const SignupComp = () => {
                     </button>
                   </div>
                   <div className="flex justify-center text-sm text-center space-x-1">
-                    <p className="font-medium text-gray-600">Already have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                    <p className="font-medium text-gray-600">Already have an account?</p><a href="/user/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Sign in</a>
                   </div>
                 </form>
               </div>
@@ -203,7 +206,7 @@ export const SignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/user/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Sign in </a>
                 </div>
               </form>
             )}
@@ -277,7 +280,7 @@ export const SignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p><a href="user/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Sign in</a>
                 </div>
               </form>
             )}

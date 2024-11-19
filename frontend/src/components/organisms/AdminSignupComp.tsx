@@ -170,7 +170,7 @@ export const AdminSignupComp = () => {
                   </button>
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
-                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <p className="font-medium text-gray-600">Already have an account?</p><a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Signin</a>
                 </div>
               </form>
             )}
@@ -208,13 +208,13 @@ export const AdminSignupComp = () => {
             {step === 3 && (
               <form className="w-[280px]">
                 <label className="block">
-                  <span className="mt-5 mb-2 block text-sm font-medium text-slate-800">First name</span>
+                  <span className="mt-5 mb-2 block text-sm font-medium text-slate-800">User Name</span>
                   <input
                     type="text"
                     name="orgName"
                     value={input.orgName}
                     onChange={changeEventHandler}
-                    placeholder="Robert"
+                    placeholder="user_name"
                     className="mt-1 block w-full px-3 py-4 bg-slate-100 border border-slate-300 rounded-md text-sm 
                   shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
                   disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
@@ -262,7 +262,7 @@ export const AdminSignupComp = () => {
                 </div>
                 <div className="flex justify-center text-sm text-center space-x-1">
                   <p className="font-medium text-gray-600">Already have an account?</p>
-                  <a href="/provider/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
+                  <a href="/admin/signin" className="text-blue-600 hover:underline dark:text-blue-500 font-medium">Login</a>
                 </div>
               </form>
             )}
