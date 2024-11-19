@@ -3,13 +3,15 @@ import jwt from "jsonwebtoken"
 
 
 interface JwtPayload {
-    userId: string;
-    email: string;
+    userId: string
+    email: string
+    role: string
   }
 
 export const isAuthenticated = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token = req.cookies.token;
+        // console.log(token)
         if(!token){
             res.status(401).json({
                 message: "User not authenticated",
@@ -28,6 +30,7 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
         }
         req.id = decode.userId
         req.email = decode.email
+        req.role = decode.role
         next();
     } catch (error) {
         res.status(500).json({

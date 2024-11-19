@@ -16,7 +16,16 @@ export const addProducts = async(req: Request, res: Response): Promise<void> => 
     try {
         const { name, title, description, tags} =  UploadProductInput.parse(req.body);
         const adminId = req.id
+        const role = req.role
         const file = req.file;
+        
+        if(role != "Admin"){
+            res.status(401).json({
+                message: "You not authorized to add product",
+                success: false
+            })
+            return
+        }
 
         const productExists = await prisma.product.findUnique({
             where: {name}

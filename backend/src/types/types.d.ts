@@ -5,5 +5,6 @@ declare module "express-serve-static-core" {
   interface Request {
     id?: string; // Add the custom `id` property
     email?: string; // Add the custom `id` property
+    role?: string;
   }
 }

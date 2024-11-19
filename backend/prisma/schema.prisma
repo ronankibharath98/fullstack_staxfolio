@@ -22,8 +22,8 @@ model VerifyAdminOtp {
 }
 
 enum Role {
-  MANAGER
-  USER
+  manager
+  user
 }
 
 model User {
@@ -35,7 +35,7 @@ model User {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @default(now())
   metadata      UserMetadata[]  @relation("UserMetadataRelation")
-  role          Role            @default(USER)
+  role          Role            @default(user)
 }
 
 model UserMetadata {
@@ -51,7 +51,7 @@ model UserMetadata {
 
 model Admin {
   id            String            @id @default(uuid())
-  role          String            @default("Admin")
+  role          String            @default("admin")
   orgName       String?
   orgEmail      String            @unique
   password      String?

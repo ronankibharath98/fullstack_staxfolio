@@ -190,7 +190,8 @@ export const adminSignup = async( req: Request, res: Response ): Promise<void> =
 
         const tokenData = {
             user_id: admin.id,
-            orgEmail: admin.orgEmail
+            orgEmail: admin.orgEmail,
+            role: admin.role
         }
 
         const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {expiresIn:"1d"})
@@ -266,7 +267,8 @@ export const adminSignin = async(req: Request, res: Response): Promise<void> => 
 
         const tokenData = {
             userId: admin.id,
-            email: admin.orgEmail
+            email: admin.orgEmail,
+            role: admin.role
         }
 
         const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, { expiresIn: "1d"})
@@ -417,7 +419,7 @@ export const getAdminProducts = async(req: Request, res: Response): Promise<void
         })
 
         if(!adminProducts || adminProducts.length == 0){
-            res.status(204).json({
+            res.status(200).json({
                 message: "No products found for admin",
                 success: true
             })

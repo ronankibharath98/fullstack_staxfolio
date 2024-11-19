@@ -263,7 +263,8 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
 
         const tokenData = {
             userId: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
 
         const token = jwt.sign(tokenData, process.env.JWT_SECRET as string, {expiresIn: "1d"})
@@ -277,7 +278,8 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
             user: {
                 firstName: user.firstName,
                 lastName: user.lastName,
-                email: user.email
+                email: user.email,
+                role: user.role
             }
         })
         return
@@ -308,3 +310,39 @@ export const userLogout = async(req: Request, res: Response): Promise<void> => {
     }
 }
 
+export const getUserProfile = async( req: Request, res: Response ): Promise<void> => {
+    try {
+        const userId = req.id
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        })
+    
+        if(!user){
+            res.status(404).json({
+                message: "User profile data not found",
+                success: false
+            })
+            return
+        }
+        res.status(200).json({
+            message: "User profile data fetched successfully",
+            success: true,
+            user:{
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                role: user.role
+            }
+        })
+        return
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error in retriving admin profile data",
+            success: false
+        })
+        return
+    }
+}
