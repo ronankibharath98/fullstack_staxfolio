@@ -24,6 +24,7 @@ export const UserProfileComp = () => {
                 const response = await axios.get(`${USER_API_END_POINT}/profile`, {
                     withCredentials: true
                 })
+                console.log(response)
                 setUserData(response.data.user);
             } catch (error) {
                 console.log(error)

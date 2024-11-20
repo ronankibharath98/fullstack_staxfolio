@@ -18,7 +18,7 @@ export const Navbar = () => {
     const { loading, user, role } = useSelector((store: RootState) => store.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    console.log(user);
 
     const logoutHandler = async () => {
         setLoading(true)
@@ -93,7 +93,7 @@ export const Navbar = () => {
                                         <Avatar className="cursor-pointer">
                                             <AvatarImage
                                                 src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
-                                                alt={user?.fullname || "Profile Image"}
+                                                alt={user?.fullName || "Profile Image"}
                                             />
                                         </Avatar>
                                     </PopoverTrigger>
@@ -106,8 +106,8 @@ export const Navbar = () => {
                                                 />
                                             </Avatar>
                                             <div>
-                                                <h4 className='font-medium'>{user?.firstName}</h4>
-                                                <p className='text-sm text-muted-foreground'>{user.role || `${role} Profile`}</p>
+                                                <h4 className='font-medium'>{user}</h4>
+                                                <p className='text-sm text-muted-foreground'>{`${role} Profile`}</p>
                                             </div>
                                         </div>
                                         <div className="flex flex-col mt-3 space-y-3 text-gray-600">

@@ -1,5 +1,5 @@
 import { EmailAuthInput, EmailOtpInput, SigninInput, SignupInput } from "../zod/zodSchema";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { sendEmailConf } from "../utils/emailAuthConfirmation";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { fromEnv } from "@aws-sdk/credential-provider-env";
@@ -159,10 +159,8 @@ export const userSignup = async(req: Request, res: Response): Promise<void> => {
                 ContentType: file.mimetype as string,
                 // ACL: 'public-read' as ObjectCannedACL,
             }
-
             const command  = new PutObjectCommand(params)
             profilePhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600})
-
         }   
         
         const user = await prisma.user.upsert({
@@ -317,9 +315,17 @@ export const getUserProfile = async( req: Request, res: Response ): Promise<void
         const user = await prisma.user.findUnique({
             where: {
                 id: userId
+            },
+            include:{
+                metadata:{
+                    select:{
+                        url: true,
+                        name: true
+                    }
+                }
             }
         })
-    
+        
         if(!user){
             res.status(404).json({
                 message: "User profile data not found",
@@ -327,20 +333,50 @@ export const getUserProfile = async( req: Request, res: Response ): Promise<void
             })
             return
         }
+
+        const userProfile = {
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            profilePhotoUrl: user.metadata.length > 0 ? user.metadata[0].url : null
+        };
+
+        // If there's a profile photo, fetch it from S3
+        if (user.metadata.length > 0) {
+            const photoName = user.metadata[0].name;
+
+            // Get image from S3
+            const params = {
+                Bucket: 'your-bucket-name', // Replace with your bucket name
+                Key: photoName, // The file name (or path) in S3
+            };
+
+            s3.getObject(params, (err, data) => {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error fetching profile photo from S3',
+                        success: false,
+                        error: err.message
+                    });
+                }
+
+                // Set the content type for the image
+                res.setHeader('Content-Type', data.ContentType);
+                res.status(200).send(data.Body); // Send the image back to the frontend
+            });
+            return;
+        }
+
         res.status(200).json({
             message: "User profile data fetched successfully",
             success: true,
-            user:{
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                role: user.role
-            }
+            user: userProfile
         })
         return
     } catch (error) {
         res.status(500).json({
-            message: "Server error in retriving admin profile data",
+            message: "Server error in retriving user profile data",
             success: false
         })
         return

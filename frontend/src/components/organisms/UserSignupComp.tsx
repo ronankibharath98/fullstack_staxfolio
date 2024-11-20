@@ -66,12 +66,12 @@ export const SignupComp = () => {
     setLoading(true)
     try {
       // Upload the file to S3 using the pre-signed URL
-      await axios.put(url, file, {
+      const response = await axios.put(url, file, {
         headers: {
           'Content-Type': file.type, // Set the content type of the file
         },
       });
-      console.log('File uploaded successfully');
+      console.log(response);
     } catch (error: any) {
       setError(error.response?.data?.message || "Error uploading file.")
     } finally {
@@ -96,12 +96,15 @@ export const SignupComp = () => {
 
       const response = await axios.post(`${USER_API_END_POINT}/signup`, formData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         }
       })
+      console.log(response)
       const url = response.data.uploadUrl
+      console.log(url)
       if (file) {
-        await uploadFileToS3(file, url);
+        const isUploaded = await uploadFileToS3(file, url);
+        console.log(isUploaded)
       }
       navigate("/welcome");
     } catch (error: any) {
