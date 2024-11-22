@@ -1,6 +1,6 @@
-import { ProfileComp } from "../organisms/ProfileComp"
+import { ProfileComp } from "@/components/organisms/ProfileComp"
 
-export const UserProfile = () => {
+export const Profile = () => {
     return(
         <div className="flex justify-center h-screen">
             <ProfileComp/>

@@ -10,7 +10,6 @@ type ProfileData = {
 type ProfileProps = {
     userName: string,
     profileData: ProfileData,
-    role: string
 };
 
 

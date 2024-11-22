@@ -7,23 +7,25 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { Avatar, AvatarImage } from "../atoms/avatar";
 import axios from "axios";
-import { ADMIN_API_END_POINT } from "../../lib/constant";
+import { ADMIN_API_END_POINT, USER_API_END_POINT } from "../../lib/constant";
 import { setLoading, setRole, setUser } from "@/redux/authSlice";
 import { Button } from "../atoms/button";
 import { useNavigate } from "react-router-dom";
 import { setAllAdminProducts, setAllProducts } from "@/redux/productSlice";
+import useGetProfile from "@/hooks/useGetProfile";
 
 
 export const Navbar = () => {
-    const { loading, user, role } = useSelector((store: RootState) => store.auth);
+    const { user, role } = useSelector((store: RootState) => store.auth);
+    const { loading, error } = useGetProfile();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    console.log(user);
-
+    
     const logoutHandler = async () => {
         setLoading(true)
         try {
-            const response = await axios.get(`${ADMIN_API_END_POINT}/signout`, { withCredentials: true })
+            let endpoint = role === "admin" ? `${ADMIN_API_END_POINT}/signout` : `${USER_API_END_POINT}/signout`;
+            const response = await axios.post(endpoint,{}, { withCredentials: true })
             if (response.data.success) {
                 dispatch(setUser(null));
                 dispatch(setRole(null));
@@ -62,8 +64,8 @@ export const Navbar = () => {
                             </div>
                         </div>
                     ) : (
-                        <div>
-                        </div>
+                        <>
+                        </>
                     )}
                 </div>
 
@@ -93,7 +95,7 @@ export const Navbar = () => {
                                         <Avatar className="cursor-pointer">
                                             <AvatarImage
                                                 src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
-                                                alt={user?.fullName || "Profile Image"}
+                                                alt={user?.firstName || user?.orgName || "Profile Image"}
                                             />
                                         </Avatar>
                                     </PopoverTrigger>
@@ -102,11 +104,11 @@ export const Navbar = () => {
                                             <Avatar className="cursor-pointer">
                                                 <AvatarImage
                                                     src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
-                                                    alt={user?.firstName || "Profile Image"}
+                                                    alt={user?.firstName || user?.name || "Profile Image"}
                                                 />
                                             </Avatar>
                                             <div>
-                                                <h4 className='font-medium'>{user}</h4>
+                                                <h4 className='font-medium'>{user?.firstName || user?.name}</h4>
                                                 <p className='text-sm text-muted-foreground'>{`${role} Profile`}</p>
                                             </div>
                                         </div>
@@ -171,7 +173,7 @@ export const Navbar = () => {
                             <div className="flex space-x-5">
                                 <div>
                                     <button
-                                        onClick={() => window.location.href = "/authoptions"}
+                                        onClick={() => navigate("/authoptions")}
                                         type="button"
                                         className="focus:outline-none text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                                         Sign up
@@ -179,7 +181,7 @@ export const Navbar = () => {
                                 </div>
                                 <div>
                                     <button
-                                        onClick={() => window.location.href = "/authoptions"}
+                                        onClick={() => navigate("/authoptions")}
                                         type="button"
                                         className="focus:outline-none text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                                         Sign in

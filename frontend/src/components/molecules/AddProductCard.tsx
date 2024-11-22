@@ -1,6 +1,6 @@
 import { FileUpload } from "../atoms/FileUpload"
 import { Button } from "../atoms/button"
-import { Input, LargeInput } from "../atoms/input"
+import { Input, LargeInput } from "../atoms/Input"
 
 export const AddProductCard = () => {
     return(

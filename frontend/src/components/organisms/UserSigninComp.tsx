@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { USER_API_END_POINT } from "../../lib/constant"
-import { useDispatch, useSelector } from "react-redux"
-import type { RootState } from "@/redux/store"
+import { useDispatch } from "react-redux"
 import { setLoading, setRole, setUser } from "@/redux/authSlice"
 
 export const SigninComp = () => {
@@ -12,41 +11,46 @@ export const SigninComp = () => {
     password: ""
   })
 
-  const { loading, user } = useSelector((store: RootState) => store.auth)
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const changeEventHandler = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value })
+  const changeEventHandler = (e: any) => {
+    const { name, value } = e.target
+    setInput((prevData) => ({
+      ...prevData,
+      [name]: value
+    }))
   }
 
   // Function to handle final registration
-  const handleRegistration = async () => {
+  const handleRegistration = async (e: any) => {
+    dispatch(setLoading(true));
+    setError(null);
+
     if (!input.email || !input.password) {
       setError("Email and Password are required");
       return;
     }
-    dispatch(setLoading(true))
+
     try {
-      const response = await axios.post(`${USER_API_END_POINT}/signin`, input,{
+      const response = await axios.post(`${USER_API_END_POINT}/signin`, input, {
         withCredentials: true
       })
-      dispatch(setUser(response.data.user.firstName))
-      dispatch(setRole(response.data.user.role))
-      setError("");
+      if(response.data.success){
+        dispatch(setUser({
+            firstName: response.data.user.firstName,
+            email: response.data.user.email,
+            role: response.data.user.role
+          }))
+        dispatch(setRole(response.data.user.role))
+        navigate("/welcome");
+    }
     } catch (error: any) {
       setError(error.response?.data?.message || "An error occured")
-      console.log(error)
-    } finally{
-        dispatch(setLoading(false));
+    } finally {
+      dispatch(setLoading(false));
     }
   };
-
-  useEffect (() => {
-    if(user){
-      navigate("/welcome")
-    }
-  }, [user, navigate])
 
   return (
     <div className="bg-[#e9edf6] flex flex-col justify-center h-screen">
@@ -106,7 +110,7 @@ export const SigninComp = () => {
                   className="mt-5 w-full text-white bg-violet-600 hover:bg-violet-700 focus:ring-4 focus:ring-violet-300 
                   font-medium rounded-lg text-sm px-5 py-4 me-2 mb-2 dark:bg-violet-600 dark:hover:bg-violet-700 
                   focus:outline-none dark:focus:ring-violet-800">
-                  Sign in 
+                  Sign in
                 </button>
               </div>
               <div className="flex text-sm text-left space-x-1">

@@ -1,10 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-type Role = null | "admin" | "manager" | "user" 
+type Role = null | "admin" | "manager" | "user"
+
+interface User {
+    name?: string
+    firstName?: string
+    lastName?: string
+    email?: string
+    role: Role
+}
 
 interface AuthState {
     loading: boolean;
-    user: any;
+    user: User | null;
     role: Role;
 }
 
@@ -17,21 +25,28 @@ const initialState: AuthState = {
 export const authSlice = createSlice({
     name: "auth",
     initialState,
-    reducers:{
+    reducers: {
         //actions
         setLoading: (state, action) => {
             state.loading = action.payload
         },
         setUser: (state, action) => {
-            state.user = action.payload
+            if (action.payload){
+                const { role, ...rest } = action.payload; 
+                state.user = { ...rest, role };          
+                state.role = role;                  
+            }else{
+                state.user = null;
+                state.role = null;
+            }
         },
         setRole: (state, action) => {
-            state.role = action.payload
+            state.role = action.payload;
         },
         logout: (state) => {
-            state.loading = false,
-            state.user = null,
-            state.role = null
+            state.loading = false;
+            state.user = null;
+            state.role = null;
         }
     }
 })

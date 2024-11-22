@@ -6,10 +6,9 @@ import { AdminSignup } from './components/pages/AdminSignup'
 import { Home } from './components/pages/Home'
 import { AuthOptions } from './components/pages/auth'
 import { AdminProducts } from './components/pages/AdminProducts'
-import { AdminProfile } from './components/pages/AdminProfile'
+import { Profile } from './components/pages/Profile'
 import { ProductGridCard } from './components/molecules/ProductGridCard'
 import { AdminAddProduct } from './components/pages/AdminAddProduct'
-import { UserProfile } from './components/pages/UserProfile'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { logout } from './redux/authSlice'
@@ -36,8 +35,8 @@ function App() {
       <Route path="/admin/signin" element={<AdminSignin />} />
       <Route path="/welcome" element={<Home />} />
       <Route path="/admin/myProducts" element={<AdminProducts />} />
-      <Route path="/admin/profile" element={<AdminProfile />} />
-      <Route path="/profile" element={<UserProfile />} />
+      <Route path="/admin/profile" element={<Profile />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/admin/add-product" element={<AdminAddProduct />} />
       <Route path="/products" element={<ProductGridCard/>}/>
     </Routes>

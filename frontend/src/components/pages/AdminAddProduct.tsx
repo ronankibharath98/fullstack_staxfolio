@@ -4,6 +4,9 @@ import { RootState } from "@/redux/store"
 
 export const AdminAddProduct = () => {
     const { role, loading } = useSelector((store : RootState)=>store.auth)
+
+    //need to add backend apis to update product
+
     if(loading){
         return(
             <div className="flex justify-center items-center">

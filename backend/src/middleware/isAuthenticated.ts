@@ -11,7 +11,6 @@ interface JwtPayload {
 export const isAuthenticated = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token = req.cookies.token;
-        // console.log(token)
         if(!token){
             res.status(401).json({
                 message: "User not authenticated",

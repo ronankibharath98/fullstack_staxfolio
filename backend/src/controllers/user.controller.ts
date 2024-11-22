@@ -243,7 +243,7 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
 
         if(!user.password){
             res.status(400).json({
-                message: "This account requires an alternative login method (e.g., OAuth).",
+                message: "This account requires an alternative login method",
                 success: false
             })
             return
@@ -292,8 +292,10 @@ export const userSignin = async( req: Request, res: Response ): Promise<void> =>
     }
 }
 
-export const userLogout = async(req: Request, res: Response): Promise<void> => {
+export const userSignout = async(req: Request, res: Response): Promise<void> => {
     try{
+        const userId = req.id;
+        console.log(userId)
         res.status(200).cookie("token", "",{maxAge: 0} ).json({
             message: "User logged out successfully",
             success: true

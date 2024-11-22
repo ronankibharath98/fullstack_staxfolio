@@ -298,7 +298,7 @@ export const adminSignin = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
-export const adminLogout = async(req: Request, res: Response): Promise<void> => {
+export const adminSignout = async(req: Request, res: Response): Promise<void> => {
     try{
         res.status(200).cookie("token", "",{maxAge: 0} ).json({
             message: "Admin logged out successfully",
@@ -333,7 +333,7 @@ export const getAdminProfile = async (req: Request, res: Response): Promise<void
         res.status(200).json({
             message: "Admin profile data fetched successfully",
             success: true,
-            adminProfile:{
+            user:{
                 email: adminProfile.orgEmail,
                 name: adminProfile.orgName,
                 role: adminProfile.role

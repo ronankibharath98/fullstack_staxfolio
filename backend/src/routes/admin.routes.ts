@@ -1,5 +1,5 @@
 import express from "express";
-import { adminLogout, adminSignin, 
+import { adminSignout, adminSignin, 
         adminSignup, 
         getAdminProducts, 
         getAdminProfile, 
@@ -17,7 +17,7 @@ router.route("/email").post(orgEmailVerification)
 router.route("/email/verify-otp").post(orgOtpVerification)
 router.route("/signup").post(singleUpload, adminSignup)
 router.route("/signin").post(adminSignin)
-router.route("/signout").get(adminLogout)
+router.route("/signout").post(isAuthenticated, adminSignout)
 router.route("/profile").get(isAuthenticated, getAdminProfile)
 router.route("/updateProfile").post(isAuthenticated, updateAdminProfile)
 router.route("/getMyProducts").get(isAuthenticated, getAdminProducts)

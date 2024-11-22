@@ -11,7 +11,7 @@ export const AdminSigninComp = () => {
         orgEmail: "",
         password: ""
     })
-    const { loading, user, role } = useSelector((store: RootState) => store.auth);
+    const { loading } = useSelector((store: RootState) => store.auth);
     const [ error, setError ] = useState<string | null>(null)
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -39,7 +39,10 @@ export const AdminSigninComp = () => {
                 withCredentials: true
             });
             if(response.data.success){
-                dispatch(setUser(response.data.admin.email))
+                dispatch(setUser({
+                    email: response.data.admin.email,
+                    role: response.data.admin.role
+                  }))
                 dispatch(setRole(response.data.admin.role))
                 navigate("/welcome");
             }

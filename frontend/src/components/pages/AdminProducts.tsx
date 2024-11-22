@@ -14,7 +14,6 @@ interface Product {
 
 export const AdminProducts = () => {
     const { allAdminProducts, error, loading } = useGetAllAdminProducts()
-    console.log(allAdminProducts)
     // If there is an error, display it
     if (error) {
         return <div className="text-red-500">{error}</div>;

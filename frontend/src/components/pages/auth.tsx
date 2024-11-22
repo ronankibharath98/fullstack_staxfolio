@@ -32,23 +32,23 @@ export const AuthOptions = () => {
                     {/* Role Selection */}
                     {role === null ? (
                         <div className="flex flex-col space-y-5">
-                            <Button onClick={() => dispatch(setRole("Admin"))} className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-3">
+                            <Button onClick={() => dispatch(setRole("admin"))} className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-3">
                                 I'm a Software Provider
                             </Button>
-                            <Button onClick={() => dispatch(setRole("User"))} className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-3">
+                            <Button onClick={() => dispatch(setRole("user"))} className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-3">
                                 I'm a User
                             </Button>
                         </div>
                     ) : (
                         <div>
                             <h2 className="text-xl font-medium text-center mb-4">
-                                {role === "Admin" ? "Admin" : "User"} Signin or Signup
+                                {role === "admin" ? "Admin" : "User"} Signin or Signup
                             </h2>
                             <div className="flex flex-col space-y-3">
-                                <Button onClick={() => navigate(`/${role.toLowerCase()}/signin`)} className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
+                                <Button onClick={() => navigate(`/${role}/signin`)} className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
                                     Sign in
                                 </Button>
-                                <Button onClick={() => navigate(`/${role.toLowerCase()}/signup`) }  className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
+                                <Button onClick={() => navigate(`/${role}/signup`) }  className="bg-violet-600 hover:bg-violet-700 text-white rounded-lg py-3">
                                     Sign up
                                 </Button>
                             </div>
